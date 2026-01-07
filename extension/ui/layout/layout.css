@@ -5,15 +5,12 @@
     position: fixed;
     z-index: 9999;
     transition: box-shadow 0.25s ease;
+    pointer-events: auto;
 }
 
 .floating-container.dragging {
     cursor: grabbing;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
-}
-
-.floating-container.minimized {
-    pointer-events: auto;
 }
 
 /* Animations */
