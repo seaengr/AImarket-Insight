@@ -95,10 +95,10 @@ class UIStore {
         }));
     }
 
-    setPosition(top: number, right: number): void {
+    setPosition(top: number, left: number): void {
         this.setState((state) => ({
             ...state,
-            panel: { ...state.panel, position: { top, right } },
+            panel: { ...state.panel, position: { top, left } },
         }));
     }
 

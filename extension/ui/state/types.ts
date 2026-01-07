@@ -68,7 +68,7 @@ export interface PanelState {
     isExplanationExpanded: boolean;
     position: {
         top: number;
-        right: number;
+        left: number;
     };
     visibility: PanelVisibility;
 }
@@ -90,7 +90,7 @@ export interface UIActions {
     toggleMinimize: () => void;
     toggleSettings: () => void;
     toggleExplanation: () => void;
-    setPosition: (top: number, right: number) => void;
+    setPosition: (top: number, left: number) => void;
     toggleVisibility: (section: keyof PanelVisibility) => void;
     updateAnalysis: (analysis: Partial<MarketAnalysis>) => void;
 }

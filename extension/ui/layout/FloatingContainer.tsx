@@ -5,9 +5,9 @@ import './layout.css';
 
 interface FloatingContainerProps {
     children: React.ReactNode;
-    initialPosition: { top: number; right: number };
+    initialPosition: { top: number; left: number };
     isMinimized: boolean;
-    onPositionChange: (top: number, right: number) => void;
+    onPositionChange: (top: number, left: number) => void;
 }
 
 /**
@@ -24,7 +24,7 @@ export const FloatingContainer: React.FC<FloatingContainerProps> = ({
     const [isDragging, setIsDragging] = useState(false);
     const [position, setPosition] = useState(initialPosition);
     const dragStart = useRef({ x: 0, y: 0 });
-    const positionStart = useRef({ top: 0, right: 0 });
+    const positionStart = useRef({ top: 0, left: 0 });
 
     // Handle drag start
     const handleDragStart = useCallback((e: React.MouseEvent) => {
@@ -37,41 +37,43 @@ export const FloatingContainer: React.FC<FloatingContainerProps> = ({
         }
     }, [position]);
 
-    // Handle dragging
+    const handleTranslate = useCallback((e: MouseEvent) => {
+        if (!isDragging) return;
+
+        const deltaX = e.clientX - dragStart.current.x;
+        const deltaY = e.clientY - dragStart.current.y;
+
+        const newLeft = clamp(
+            positionStart.current.left + deltaX,
+            PANEL_MARGIN,
+            window.innerWidth - (isMinimized ? 48 : PANEL_WIDTH) - PANEL_MARGIN
+        );
+        const newTop = clamp(
+            positionStart.current.top + deltaY,
+            PANEL_MARGIN,
+            window.innerHeight - (isMinimized ? 48 : 500) // 500 as fallback height approx
+        );
+
+        setPosition({ top: newTop, left: newLeft });
+    }, [isDragging, isMinimized]);
+
+    // Handle dragging events
     useEffect(() => {
         if (!isDragging) return;
 
-        const handleMouseMove = (e: MouseEvent) => {
-            const deltaX = dragStart.current.x - e.clientX;
-            const deltaY = e.clientY - dragStart.current.y;
-
-            const newRight = clamp(
-                positionStart.current.right + deltaX,
-                PANEL_MARGIN,
-                window.innerWidth - (isMinimized ? 48 : PANEL_WIDTH) - PANEL_MARGIN
-            );
-            const newTop = clamp(
-                positionStart.current.top + deltaY,
-                PANEL_MARGIN,
-                window.innerHeight - 100
-            );
-
-            setPosition({ top: newTop, right: newRight });
-        };
-
         const handleMouseUp = () => {
             setIsDragging(false);
-            onPositionChange(position.top, position.right);
+            onPositionChange(position.top, position.left);
         };
 
-        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mousemove', handleTranslate);
         document.addEventListener('mouseup', handleMouseUp);
 
         return () => {
-            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mousemove', handleTranslate);
             document.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [isDragging, isMinimized, onPositionChange, position]);
+    }, [isDragging, handleTranslate, onPositionChange, position]);
 
     // Update position when receiving new props
     useEffect(() => {
@@ -88,7 +90,7 @@ export const FloatingContainer: React.FC<FloatingContainerProps> = ({
             )}
             style={{
                 top: position.top,
-                right: position.right,
+                left: position.left,
                 zIndex: Z_INDEX.panel,
             }}
             onMouseDown={handleDragStart}

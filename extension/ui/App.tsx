@@ -42,8 +42,8 @@ export const App: React.FC = () => {
         uiStore.toggleExplanation();
     }, []);
 
-    const handlePositionChange = useCallback((top: number, right: number) => {
-        uiStore.setPosition(top, right);
+    const handlePositionChange = useCallback((top: number, left: number) => {
+        uiStore.setPosition(top, left);
     }, []);
 
     const handleReset = useCallback(() => {

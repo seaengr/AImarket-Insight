@@ -31,7 +31,7 @@ export const ANIMATION = {
 // Default panel position
 export const DEFAULT_POSITION = {
   top: 100,
-  right: PANEL_MARGIN,
+  left: 800, // Near right side by default
 } as const;
 
 // Signal types
