@@ -8,12 +8,12 @@
     "storage"
   ],
   "host_permissions": [
-    "https://*.tradingview.com/*"
+    "*://*.tradingview.com/*"
   ],
   "content_scripts": [
     {
       "matches": [
-        "https://*.tradingview.com/*"
+        "*://*.tradingview.com/*"
       ],
       "js": [
         "content/inject.js"
