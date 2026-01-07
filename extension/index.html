@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -116,6 +117,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="popup-header">
     <div class="popup-icon">
@@ -129,16 +131,43 @@
     </div>
   </div>
 
-  <div class="popup-content">
-    <div class="status-item">
-      <span class="status-label">Panel Status</span>
-      <span class="status-value active" id="panel-status">Active</span>
-    </div>
-    <div class="status-item">
-      <span class="status-label">Current Page</span>
-      <span class="status-value" id="page-status">Checking...</span>
-    </div>
+  <div class="status-item">
+    <span class="status-label">Panel Visibility</span>
+    <button class="toggle-btn" id="toggle-visibility">Show/Hide</button>
   </div>
+  </div>
+
+  <style>
+    .toggle-btn {
+      background: linear-gradient(135deg, #4a90d9 0%, #7c4dff 100%);
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    .toggle-btn:hover {
+      opacity: 0.9;
+    }
+
+    .toggle-btn:active {
+      transform: scale(0.95);
+    }
+  </style>
+
+  <script>
+    document.getElementById('toggle-visibility').addEventListener('click', () => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]?.id) {
+          chrome.tabs.sendMessage(tabs[0].id, { type: 'TOGGLE_PANEL' });
+        }
+      });
+    });
+  </script>
 
   <div class="popup-footer">
     <a href="#" class="help-link">
@@ -153,11 +182,11 @@
 
   <script>
     // Check current tab
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const tab = tabs[0];
       const pageStatus = document.getElementById('page-status');
       const panelStatus = document.getElementById('panel-status');
-      
+
       if (tab.url && tab.url.includes('tradingview.com')) {
         pageStatus.textContent = 'TradingView';
         pageStatus.classList.add('active');
@@ -171,4 +200,5 @@
     });
   </script>
 </body>
+
 </html>

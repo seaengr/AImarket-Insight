@@ -18,7 +18,29 @@ export const App: React.FC = () => {
         const unsubscribe = uiStore.subscribe(() => {
             setState(uiStore.getState());
         });
-        return unsubscribe;
+
+        // Listen for messages from popup
+        const handleMessage = (message: any) => {
+            if (message.type === 'TOGGLE_PANEL') {
+                uiStore.togglePanel();
+            }
+        };
+
+        // Listen for keyboard shortcuts (Alt+A)
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.altKey && e.key.toLowerCase() === 'a') {
+                uiStore.togglePanel();
+            }
+        };
+
+        chrome.runtime.onMessage.addListener(handleMessage);
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            unsubscribe();
+            chrome.runtime.onMessage.removeListener(handleMessage);
+            window.removeEventListener('keydown', handleKeyDown);
+        };
     }, []);
 
     // Event handlers - delegate to store
