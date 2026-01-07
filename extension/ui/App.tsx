@@ -93,6 +93,7 @@ export const App: React.FC = () => {
             >
                 {state.panel.isVisible ? (
                     <Panel
+                        key="full-panel"
                         state={state}
                         onMinimize={handleMinimize}
                         onSettingsClick={handleSettings}
@@ -103,6 +104,7 @@ export const App: React.FC = () => {
                     />
                 ) : (
                     <div
+                        key="minimized-trigger"
                         className={styles.panelMinimized}
                         onClick={handleHide}
                         title="Show AI Market Insight"

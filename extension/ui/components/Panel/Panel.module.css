@@ -8,8 +8,9 @@
   color: #ffffff;
   overflow: hidden;
   opacity: 0.9;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: floatDrift 5s ease-in-out infinite;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: floatDrift 6s ease-in-out infinite;
+  transform-origin: center;
 }
 
 .panel:hover {
@@ -29,9 +30,10 @@
   background: linear-gradient(135deg, #1a1f2e 0%, #242b3d 100%);
   border: 1px solid rgba(74, 144, 217, 0.3);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 10px rgba(74, 144, 217, 0.2);
-  animation: floatDrift 4s ease-in-out infinite, pulseGlow 3s ease-in-out infinite;
+  animation: floatDrift 5s ease-in-out infinite, pulseGlow 3s ease-in-out infinite;
   opacity: 0.8;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
 }
 
 .panelMinimized:hover {
@@ -305,23 +307,25 @@
 
 @keyframes floatDrift {
   0% {
-    transform: translate(0, 0) rotate(0deg);
+    transform: translate(0, 0) rotate(0deg) scale(0.95);
+    opacity: 0;
   }
 
-  25% {
-    transform: translate(5px, -8px) rotate(0.8deg);
+  15% {
+    transform: translate(3px, -5px) rotate(0.4deg) scale(1.02);
+    opacity: 1;
   }
 
-  50% {
-    transform: translate(-3px, -14px) rotate(-0.5deg);
+  40% {
+    transform: translate(-5px, -12px) rotate(-0.8deg) scale(1);
   }
 
-  75% {
-    transform: translate(-6px, -7px) rotate(0.4deg);
+  70% {
+    transform: translate(6px, -6px) rotate(0.6deg) scale(1.01);
   }
 
   100% {
-    transform: translate(0, 0) rotate(0deg);
+    transform: translate(0, 0) rotate(0deg) scale(1);
   }
 }
 
