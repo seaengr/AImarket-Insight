@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "AI Market Insight",
+  "version": "1.0.0",
+  "description": "AI-powered market insight panel overlay for TradingView charts",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.tradingview.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.tradingview.com/*"
+      ],
+      "js": [
+        "content/inject.js"
+      ],
+      "css": [
+        "content/overlay.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "index.html"
+  }
+}
