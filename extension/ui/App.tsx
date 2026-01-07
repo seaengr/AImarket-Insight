@@ -4,6 +4,7 @@ import type { UIState, PanelVisibility } from './state/types';
 import { FloatingContainer } from './layout/FloatingContainer';
 import { Panel } from './components/Panel/Panel';
 import { SettingsPanel } from './components/Settings/SettingsPanel';
+import styles from './components/Panel/Panel.module.css';
 
 /**
  * App component
@@ -68,6 +69,10 @@ export const App: React.FC = () => {
         uiStore.setPosition(top, left);
     }, []);
 
+    const handleHide = useCallback(() => {
+        uiStore.togglePanel();
+    }, []);
+
     const handleReset = useCallback(() => {
         uiStore.reset();
     }, []);
@@ -79,11 +84,6 @@ export const App: React.FC = () => {
         target.setAttribute('data-drag-handle', 'true');
     }, []);
 
-    // Don't render if panel is not visible
-    if (!state.panel.isVisible) {
-        return null;
-    }
-
     return (
         <>
             <FloatingContainer
@@ -91,14 +91,26 @@ export const App: React.FC = () => {
                 isMinimized={state.panel.isMinimized}
                 onPositionChange={handlePositionChange}
             >
-                <Panel
-                    state={state}
-                    onMinimize={handleMinimize}
-                    onSettingsClick={handleSettings}
-                    onDragStart={handleDragStart}
-                    onToggleSection={handleToggleSection}
-                    onToggleExplanation={handleToggleExplanation}
-                />
+                {state.panel.isVisible ? (
+                    <Panel
+                        state={state}
+                        onMinimize={handleMinimize}
+                        onSettingsClick={handleSettings}
+                        onHide={handleHide}
+                        onDragStart={handleDragStart}
+                        onToggleSection={handleToggleSection}
+                        onToggleExplanation={handleToggleExplanation}
+                    />
+                ) : (
+                    <div
+                        className={styles.panelMinimized}
+                        onClick={handleHide}
+                        title="Show AI Market Insight"
+                        style={{ opacity: 0.7 }}
+                    >
+                        <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#4a90d9' }}>AI</span>
+                    </div>
+                )}
             </FloatingContainer>
 
             <SettingsPanel
