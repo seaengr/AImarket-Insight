@@ -4,8 +4,13 @@
 .floating-container {
     position: fixed;
     z-index: 9999;
-    transition: box-shadow 0.25s ease;
+    transition: box-shadow 0.25s ease, top 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
     pointer-events: auto;
+}
+
+.floating-container.dragging {
+    transition: box-shadow 0.25s ease;
+    /* Disable top/left transition during drag */
 }
 
 .floating-container.dragging {
