@@ -179,23 +179,23 @@
 
 @keyframes floatDrift {
   0% {
-    transform: translate(0, 0);
+    transform: translate(0, 0) rotate(0deg);
   }
 
   25% {
-    transform: translate(3px, -4px);
+    transform: translate(5px, -8px) rotate(0.8deg);
   }
 
   50% {
-    transform: translate(0, -8px);
+    transform: translate(-3px, -14px) rotate(-0.5deg);
   }
 
   75% {
-    transform: translate(-3px, -4px);
+    transform: translate(-6px, -7px) rotate(0.4deg);
   }
 
   100% {
-    transform: translate(0, 0);
+    transform: translate(0, 0) rotate(0deg);
   }
 }
 
@@ -305,23 +305,23 @@
 
 @keyframes floatDrift {
   0% {
-    transform: translate(0, 0);
+    transform: translate(0, 0) rotate(0deg);
   }
 
   25% {
-    transform: translate(3px, -4px);
+    transform: translate(5px, -8px) rotate(0.8deg);
   }
 
   50% {
-    transform: translate(0, -8px);
+    transform: translate(-3px, -14px) rotate(-0.5deg);
   }
 
   75% {
-    transform: translate(-3px, -4px);
+    transform: translate(-6px, -7px) rotate(0.4deg);
   }
 
   100% {
-    transform: translate(0, 0);
+    transform: translate(0, 0) rotate(0deg);
   }
 }
 
