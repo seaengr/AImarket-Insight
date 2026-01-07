@@ -9,14 +9,28 @@ export class AIService {
      * Uses real AI (HuggingFace) if configured, else mock.
      */
     async explainSignal(symbol: string, signal: string, reasons: string[]): Promise<string[]> {
-        if (config.ai.provider === 'mock' || !config.ai.apiKey) {
+        if (config.ai.provider === 'mock') {
             return this.generateMockExplanation(symbol, signal, reasons);
         }
 
         try {
             logger.info(`Requesting AI explanation for ${symbol} via ${config.ai.provider}`);
-
             const prompt = PromptBuilder.buildExplanationPrompt(symbol, signal, reasons);
+
+            // Ollama Support
+            if (config.ai.provider === 'ollama') {
+                const response = await axios.post(config.ai.ollamaUrl, {
+                    model: config.ai.model,
+                    prompt: prompt,
+                    stream: false,
+                }, { timeout: 10000 });
+                return [response.data.response || ''];
+            }
+
+            // Fallback for HuggingFace if no API key
+            if (!config.ai.apiKey) {
+                return this.generateMockExplanation(symbol, signal, reasons);
+            }
 
             const response = await axios.post(
                 `https://api-inference.huggingface.co/models/${config.ai.model}`,
