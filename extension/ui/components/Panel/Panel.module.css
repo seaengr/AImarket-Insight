@@ -9,15 +9,14 @@
   overflow: hidden;
   opacity: 0.9;
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: floatDrift 7s ease-in-out infinite, pulseGlow 4s ease-in-out infinite;
+  animation: floatDrift 8s ease-in-out infinite, pulseGlow 5s ease-in-out infinite, shimmer 12s linear infinite;
   transform-origin: center;
-  filter: drop-shadow(0 0 8px rgba(74, 144, 217, 0.1));
+  filter: drop-shadow(0 0 10px rgba(74, 144, 217, 0.15));
 }
 
 .panel:hover {
   opacity: 1;
-  animation-play-state: paused;
-  box-shadow: 0 12px 48px rgba(74, 144, 217, 0.2);
+  box-shadow: 0 12px 48px rgba(74, 144, 217, 0.25);
 }
 
 .panelMinimized {
@@ -31,17 +30,16 @@
   background: linear-gradient(135deg, #1a1f2e 0%, #242b3d 100%);
   border: 1px solid rgba(74, 144, 217, 0.3);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 10px rgba(74, 144, 217, 0.2);
-  animation: floatDrift 5s ease-in-out infinite, pulseGlow 3s ease-in-out infinite;
+  animation: floatDrift 6s ease-in-out infinite, pulseGlow 3s ease-in-out infinite, shimmer 8s linear infinite;
   opacity: 0.8;
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center;
 }
 
 .panelMinimized:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 25px rgba(74, 144, 217, 0.5);
+  transform: scale(1.15);
+  box-shadow: 0 0 30px rgba(74, 144, 217, 0.6);
   opacity: 1;
-  animation-play-state: paused;
 }
 
 .minimizedIcon {
@@ -340,10 +338,28 @@
   }
 
   50% {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(74, 144, 217, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 25px rgba(74, 144, 217, 0.5);
   }
 
   100% {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 10px rgba(74, 144, 217, 0.2);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    filter: drop-shadow(0 0 10px rgba(74, 144, 217, 0.15)) brightness(1);
+  }
+
+  33% {
+    filter: drop-shadow(0 0 15px rgba(74, 144, 217, 0.25)) brightness(1.05);
+  }
+
+  66% {
+    filter: drop-shadow(0 0 8px rgba(74, 144, 217, 0.1)) brightness(0.95);
+  }
+
+  100% {
+    filter: drop-shadow(0 0 10px rgba(74, 144, 217, 0.15)) brightness(1);
   }
 }
