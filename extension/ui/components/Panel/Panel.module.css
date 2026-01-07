@@ -1,0 +1,252 @@
+.panel {
+  width: 320px;
+  background: linear-gradient(180deg, #1a1f2e 0%, #0f1419 100%);
+  border: 1px solid #2a3347;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #ffffff;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.panelMinimized {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1f2e 0%, #242b3d 100%);
+}
+
+.panelMinimized:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(74, 144, 217, 0.3);
+}
+
+.minimizedIcon {
+  width: 24px;
+  height: 24px;
+  fill: #4a90d9;
+}
+
+.panelContent {
+  padding: 0;
+}
+
+/* Header Styles */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid #2a3347;
+  cursor: grab;
+  user-select: none;
+}
+
+.header:active {
+  cursor: grabbing;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iconButton {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: #8b95a5;
+}
+
+.iconButton:hover {
+  background: #2a3347;
+  color: #ffffff;
+}
+
+.iconButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Section Styles */
+.section {
+  padding: 16px;
+  border-bottom: 1px solid #2a3347;
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: #8b95a5;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+/* Toggle Switch */
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #2a3347;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.toggle.active {
+  background: #00c853;
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle.active .toggleKnob {
+  transform: translateX(20px);
+}
+
+.sectionContent {
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Market Info Grid */
+.marketInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.marketInfoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.marketInfoLabel {
+  font-size: 10px;
+  font-weight: 500;
+  color: #5d6778;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.marketInfoValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Expandable Section */
+.expandButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-top: 1px solid #2a3347;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: #8b95a5;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.expandButton:hover {
+  background: #1a1f2e;
+  color: #ffffff;
+}
+
+.expandIcon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.25s ease;
+}
+
+.expandIcon.expanded {
+  transform: rotate(180deg);
+}
+
+.explanationList {
+  padding: 16px;
+  margin: 0;
+  list-style: none;
+  background: #0f1419;
+}
+
+.explanationItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 13px;
+  color: #8b95a5;
+  line-height: 1.5;
+}
+
+.explanationItem::before {
+  content: '•';
+  color: #4a90d9;
+  font-weight: bold;
+}
+
+.explanationItem:first-child {
+  padding-top: 0;
+}
+
+.explanationItem:last-child {
+  padding-bottom: 0;
+}

@@ -1,0 +1,110 @@
+.levelsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Entry Zone */
+.entryZone {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.entryValue {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: #8b95a5;
+    min-width: 70px;
+}
+
+.entryValue.low {
+    text-align: left;
+}
+
+.entryValue.high {
+    text-align: right;
+}
+
+.rangeBar {
+    flex: 1;
+    height: 4px;
+    background: linear-gradient(90deg, #4a90d9 0%, #00c853 100%);
+    border-radius: 2px;
+    position: relative;
+}
+
+.rangeIndicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Take Profit */
+.takeProfitGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.tpCard {
+    background: #0f1419;
+    border: 1px solid #2a3347;
+    border-radius: 8px;
+    padding: 12px;
+    transition: all 0.15s ease;
+}
+
+.tpCard:hover {
+    border-color: #00c853;
+    box-shadow: 0 0 12px rgba(0, 200, 83, 0.15);
+}
+
+.tpLabel {
+    font-size: 10px;
+    font-weight: 500;
+    color: #5d6778;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.tpValue {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: #00c853;
+}
+
+/* Stop Loss */
+.stopLossCard {
+    background: #0f1419;
+    border: 1px solid #2a3347;
+    border-radius: 8px;
+    padding: 12px;
+    transition: all 0.15s ease;
+}
+
+.stopLossCard:hover {
+    border-color: #ff5252;
+    box-shadow: 0 0 12px rgba(255, 82, 82, 0.15);
+}
+
+.slValue {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ff5252;
+}
+
+/* Three column grid for TP3 */
+.takeProfitGrid.threeColumns {
+    grid-template-columns: repeat(3, 1fr);
+}

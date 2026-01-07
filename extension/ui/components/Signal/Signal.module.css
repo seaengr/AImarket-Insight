@@ -1,0 +1,114 @@
+.signalBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 4px;
+    transition: all 0.25s ease;
+}
+
+.signalBadge.buy {
+    color: #00c853;
+    text-shadow: 0 0 20px rgba(0, 200, 83, 0.4);
+}
+
+.signalBadge.sell {
+    color: #ff5252;
+    text-shadow: 0 0 20px rgba(255, 82, 82, 0.4);
+}
+
+.signalBadge.hold {
+    color: #ffc107;
+    text-shadow: 0 0 20px rgba(255, 193, 7, 0.4);
+}
+
+/* Confidence Meter */
+.confidenceContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.confidenceMeter {
+    position: relative;
+    width: 70px;
+    height: 70px;
+}
+
+.confidenceRing {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.confidenceBackground {
+    fill: none;
+    stroke: #2a3347;
+    stroke-width: 6;
+}
+
+.confidenceProgress {
+    fill: none;
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;
+}
+
+.confidenceProgress.low {
+    stroke: #ff5252;
+}
+
+.confidenceProgress.medium {
+    stroke: #ffc107;
+}
+
+.confidenceProgress.high {
+    stroke: #00c853;
+}
+
+.confidenceValue {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.confidenceNumber {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.confidenceLabel {
+    font-size: 8px;
+    font-weight: 500;
+    color: #8b95a5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+/* Animation */
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.signalBadge.animating {
+    animation: pulse 1.5s ease-in-out infinite;
+}
