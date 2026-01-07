@@ -4,19 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Market Insight - Dynamic Preview</title>
+    <title>AI Market Insight - UI Preview</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap"
         rel="stylesheet">
     <style>
-        :root {
-            --primary: #4a90d9;
-            --secondary: #7c4dff;
-            --bg-dark: #0f1419;
-            --panel-border: rgba(74, 144, 217, 0.3);
-            --glass: rgba(26, 31, 46, 0.9);
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -25,147 +17,87 @@
 
         body {
             min-height: 100vh;
-            background: radial-gradient(circle at top right, #1a1f2e, #0f1419);
-            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 40px;
-            overflow: hidden;
-            color: #ffffff;
         }
 
-        .preview-grid {
-            display: grid;
-            grid-template-columns: auto auto;
-            gap: 80px;
-            align-items: center;
+        .preview-container {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
         }
 
-        .label {
+        .preview-label {
             color: #8b95a5;
-            font-size: 11px;
+            font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
             text-align: center;
-            opacity: 0.6;
         }
 
-        /* PRODUCTION ANIMATIONS SYNC */
-        @keyframes fluidReveal {
-            0% {
-                transform: scale(0.7) translateY(25px) rotate(-3deg);
-                opacity: 0;
-            }
-
-            60% {
-                transform: scale(1.05) translateY(-5px) rotate(1deg);
-                opacity: 1;
-            }
-
-            100% {
-                transform: scale(1) translateY(0) rotate(0deg);
-                opacity: 1;
-            }
-        }
-
-        @keyframes organicFloat {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-
-            33% {
-                transform: translate(14px, -20px) rotate(1.8deg);
-            }
-
-            66% {
-                transform: translate(-16px, -36px) rotate(-1.5deg);
-            }
-
-            100% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-        }
-
-        @keyframes pulseGlow {
-            0% {
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 10px rgba(74, 144, 217, 0.2);
-            }
-
-            50% {
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 32px rgba(74, 144, 217, 0.5);
-            }
-
-            100% {
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 10px rgba(74, 144, 217, 0.2);
-            }
-        }
-
-        @keyframes shimmer {
-            0% {
-                filter: drop-shadow(0 0 10px rgba(74, 144, 217, 0.15)) brightness(1);
-            }
-
-            50% {
-                filter: drop-shadow(0 0 20px rgba(74, 144, 217, 0.3)) brightness(1.1);
-            }
-
-            100% {
-                filter: drop-shadow(0 0 10px rgba(74, 144, 217, 0.15)) brightness(1);
-            }
-        }
-
-        /* Panels */
+        /* Panel Styles */
         .panel {
             width: 320px;
             background: linear-gradient(180deg, #1a1f2e 0%, #0f1419 100%);
-            border: 1px solid var(--panel-border);
+            border: 1px solid #2a3347;
             border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            color: #ffffff;
             overflow: hidden;
-            backdrop-filter: blur(8px);
-            animation:
-                fluidReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-                organicFloat 6s ease-in-out infinite 0.8s,
-                pulseGlow 5s ease-in-out infinite,
-                shimmer 10s linear infinite;
+            transition: all 0.25s ease;
         }
 
-        .panel-minimized {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1a1f2e 0%, #242b3d 100%);
-            border: 1px solid var(--panel-border);
+        /* Header */
+        .header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            backdrop-filter: blur(4px);
-            animation:
-                fluidReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-                organicFloat 5s ease-in-out infinite 0.6s,
-                pulseGlow 3s ease-in-out infinite,
-                shimmer 8s linear infinite;
-        }
-
-        /* Header Components */
-        .header {
+            justify-content: space-between;
             padding: 16px;
             border-bottom: 1px solid #2a3347;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            cursor: grab;
         }
 
         .title {
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
-        /* Sections */
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            color: #8b95a5;
+        }
+
+        .icon-btn:hover {
+            background: #2a3347;
+            color: #ffffff;
+        }
+
+        .icon-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Section */
         .section {
             padding: 16px;
             border-bottom: 1px solid #2a3347;
@@ -177,156 +109,489 @@
 
         .section-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             margin-bottom: 12px;
         }
 
         .section-title {
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 500;
             color: #8b95a5;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* Market Data */
-        .grid {
+        /* Toggle */
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #2a3347;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .toggle.active {
+            background: #00c853;
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
+            border-radius: 50%;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle.active .toggle-knob {
+            transform: translateX(20px);
+        }
+
+        /* Market Info */
+        .market-info-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 16px;
         }
 
-        .data-item {
+        .market-info-item {
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
 
-        .data-label {
+        .market-info-label {
             font-size: 10px;
+            font-weight: 500;
             color: #5d6778;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .data-value {
-            font-size: 15px;
+        .market-info-value {
+            font-size: 16px;
             font-weight: 600;
         }
 
-        /* Signal */
-        .bias {
-            font-size: 28px;
-            font-weight: 800;
-            color: #00c853;
-            text-shadow: 0 0 20px rgba(0, 200, 83, 0.3);
+        /* Signal Section */
+        .signal-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        /* Control */
-        .toggle {
-            width: 38px;
-            height: 20px;
-            background: #00c853;
-            border-radius: 10px;
+        .signal-badge {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00c853;
+            text-shadow: 0 0 20px rgba(0, 200, 83, 0.4);
+            margin-top: 4px;
+        }
+
+        .signal-badge.sell {
+            color: #ff5252;
+            text-shadow: 0 0 20px rgba(255, 82, 82, 0.4);
+        }
+
+        /* Confidence Meter */
+        .confidence-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .confidence-meter {
+            position: relative;
+            width: 70px;
+            height: 70px;
+        }
+
+        .confidence-ring {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .confidence-bg {
+            fill: none;
+            stroke: #2a3347;
+            stroke-width: 6;
+        }
+
+        .confidence-progress {
+            fill: none;
+            stroke: #00c853;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 169.65;
+            stroke-dashoffset: 37.32;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+
+        .confidence-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .confidence-number {
+            font-size: 20px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .confidence-label {
+            font-size: 8px;
+            color: #8b95a5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Entry Zone */
+        .entry-zone {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .entry-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            color: #8b95a5;
+            min-width: 70px;
+        }
+
+        .range-bar {
+            flex: 1;
+            height: 4px;
+            background: linear-gradient(90deg, #4a90d9 0%, #00c853 100%);
+            border-radius: 2px;
             position: relative;
         }
 
-        .knob {
-            width: 16px;
-            height: 16px;
-            background: white;
-            border-radius: 50%;
+        .range-indicator {
             position: absolute;
-            right: 2px;
-            top: 2px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
-        .btn-why {
-            width: 100%;
+        /* Take Profit */
+        .tp-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .tp-card {
+            background: #0f1419;
+            border: 1px solid #2a3347;
+            border-radius: 8px;
             padding: 12px;
+            transition: all 0.15s ease;
+        }
+
+        .tp-card:hover {
+            border-color: #00c853;
+            box-shadow: 0 0 12px rgba(0, 200, 83, 0.15);
+        }
+
+        .tp-label {
+            font-size: 10px;
+            color: #5d6778;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .tp-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: #00c853;
+        }
+
+        /* Stop Loss */
+        .sl-card {
+            background: #0f1419;
+            border: 1px solid #2a3347;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .sl-card:hover {
+            border-color: #ff5252;
+            box-shadow: 0 0 12px rgba(255, 82, 82, 0.15);
+        }
+
+        .sl-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #ff5252;
+        }
+
+        /* Expand Button */
+        .expand-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
             background: transparent;
             border: none;
             border-top: 1px solid #2a3347;
-            color: #8b95a5;
-            font-size: 13px;
             cursor: pointer;
-            transition: background 0.2s;
+            color: #8b95a5;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            transition: all 0.15s ease;
         }
 
-        .btn-why:hover {
-            background: rgba(255, 255, 255, 0.05);
+        .expand-btn:hover {
+            background: #1a1f2e;
+            color: #ffffff;
+        }
+
+        .expand-icon {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.25s ease;
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        /* Explanation */
+        .explanation-list {
+            padding: 16px;
+            margin: 0;
+            list-style: none;
+            background: #0f1419;
+            display: none;
+        }
+
+        .explanation-list.visible {
+            display: block;
+        }
+
+        .explanation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #8b95a5;
+            line-height: 1.5;
+        }
+
+        .explanation-item::before {
+            content: '•';
+            color: #4a90d9;
+            font-weight: bold;
+        }
+
+        /* Minimized State */
+        .panel-minimized {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1f2e 0%, #242b3d 100%);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .panel-minimized:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(74, 144, 217, 0.3);
+        }
+
+        .panel-minimized svg {
+            width: 24px;
+            height: 24px;
+            fill: #4a90d9;
         }
     </style>
 </head>
 
 <body>
-    <div class="preview-grid">
-        <div style="text-align: center;">
-            <div class="label">Production Panel Motion</div>
-            <div class="panel">
+    <div class="preview-container">
+        <!-- Full Panel -->
+        <div>
+            <div class="preview-label">Full Panel View</div>
+            <div class="panel" id="panel">
+                <!-- Header -->
                 <div class="header">
-                    <span class="title">NEURAL ENGINE v1.0</span>
-                    <div style="width: 24px; height: 24px;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="3" />
-                            <path
-                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                        </svg>
+                    <h2 class="title">AI MARKET INSIGHT</h2>
+                    <div class="header-actions">
+                        <button class="icon-btn" title="Settings">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3" />
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                            </svg>
+                        </button>
+                        <button class="icon-btn" title="Minimize" onclick="toggleMinimize()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
+
+                <!-- Market Info -->
                 <div class="section">
-                    <div class="grid">
-                        <div class="data-item"><span class="data-label">Pair</span><span
-                                class="data-value">XAUUSD</span></div>
-                        <div class="data-item"><span class="data-label">T.F</span><span class="data-value">1H</span>
+                    <div class="market-info-grid">
+                        <div class="market-info-item">
+                            <span class="market-info-label">Symbol</span>
+                            <span class="market-info-value">XAUUSD</span>
                         </div>
-                        <div class="data-item"><span class="data-label">VOL</span><span class="data-value">HIGH</span>
+                        <div class="market-info-item">
+                            <span class="market-info-label">Compare</span>
+                            <span class="market-info-value">BTC</span>
+                        </div>
+                        <div class="market-info-item">
+                            <span class="market-info-label">Timeframe</span>
+                            <span class="market-info-value">1H</span>
                         </div>
                     </div>
                 </div>
+
+                <!-- Signal -->
                 <div class="section">
-                    <div class="section-header"><span class="section-title">AI SIGNAL</span></div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span class="bias">STRONG BUY</span>
-                        <div style="text-align: right;"><span class="data-label">Confidence</span>
-                            <div class="data-value" style="color: var(--primary);">84%</div>
+                    <div class="signal-section">
+                        <div>
+                            <span class="market-info-label">Bias</span>
+                            <div class="signal-badge">BUY</div>
+                        </div>
+                        <div class="confidence-container">
+                            <div class="confidence-meter">
+                                <svg class="confidence-ring" viewBox="0 0 60 60">
+                                    <circle class="confidence-bg" cx="30" cy="30" r="27" />
+                                    <circle class="confidence-progress" cx="30" cy="30" r="27" />
+                                </svg>
+                                <div class="confidence-value">
+                                    <span class="confidence-number">78</span>
+                                    <span class="confidence-label">Confidence</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Entry Zone -->
                 <div class="section">
-                    <div class="section-header"><span class="section-title">Entry Range</span>
-                        <div class="toggle">
-                            <div class="knob"></div>
+                    <div class="section-header">
+                        <span class="section-title">Entry Zone</span>
+                        <div class="toggle active" onclick="this.classList.toggle('active')">
+                            <div class="toggle-knob"></div>
                         </div>
                     </div>
-                    <div class="data-value" style="font-family: 'JetBrains Mono'; font-size: 14px; opacity: 0.8;">
-                        2742.45 — 2748.12</div>
+                    <div class="entry-zone">
+                        <span class="entry-value">2045.50</span>
+                        <div class="range-bar">
+                            <div class="range-indicator"></div>
+                        </div>
+                        <span class="entry-value" style="text-align: right;">2052.80</span>
+                    </div>
                 </div>
-                <button class="btn-why">View Signal Explanation</button>
+
+                <!-- Take Profit -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">Take Profit</span>
+                        <div class="toggle active" onclick="this.classList.toggle('active')">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                    <div class="tp-grid">
+                        <div class="tp-card">
+                            <div class="tp-label">TP1</div>
+                            <div class="tp-value">2068.40</div>
+                        </div>
+                        <div class="tp-card">
+                            <div class="tp-label">TP2</div>
+                            <div class="tp-value">2085.90</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stop Loss -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">Stop Loss</span>
+                        <div class="toggle active" onclick="this.classList.toggle('active')"
+                            style="background: #ff5252;">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                    <div class="sl-card">
+                        <div class="sl-value">2038.20</div>
+                    </div>
+                </div>
+
+                <!-- Expand Button -->
+                <button class="expand-btn" onclick="toggleExplanation()">
+                    <span>Why this signal?</span>
+                    <svg class="expand-icon" id="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <polyline points="6,9 12,15 18,9" />
+                    </svg>
+                </button>
+
+                <!-- Explanation -->
+                <ul class="explanation-list" id="explanation">
+                    <li class="explanation-item">Strong bullish momentum detected on higher timeframes</li>
+                    <li class="explanation-item">Price holding above key support at 2040</li>
+                    <li class="explanation-item">Volume increase confirms buyer interest</li>
+                    <li class="explanation-item">RSI showing bullish divergence</li>
+                </ul>
             </div>
-            <button onclick="location.reload()"
-                style="margin-top: 30px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #8b95a5; padding: 8px 16px; border-radius: 8px; cursor: pointer;">Test
-                Reveal Animation</button>
         </div>
 
-        <div style="text-align: center;">
-            <div class="label">AI Core Motion</div>
-            <div class="panel-minimized"
-                onclick="this.style.animation='none'; setTimeout(()=>this.style.animation='', 10)">
-                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="var(--primary)" stroke-width="2">
-                    <circle cx="12" cy="12" r="9" stroke-opacity="0.3" />
-                    <path d="M12 8v8M8 12h8" stroke-opacity="0.8">
-                        <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" />
-                    </path>
-                    <circle cx="12" cy="12" r="3" fill="var(--primary)">
-                        <animate attributeName="r" values="2.2;3.8;2.2" dur="1.5s" repeatCount="indefinite" />
-                    </circle>
+        <!-- Minimized State -->
+        <div>
+            <div class="preview-label">Minimized View</div>
+            <div class="panel-minimized" onclick="toggleMinimize()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
                 </svg>
-            </div>
-            <div style="margin-top: 40px; color: #5d6778; font-size: 11px; max-width: 150px; line-height: 1.6;">
-                The orb maintains an 8-axis organic drift while pulsing with core energy.
             </div>
         </div>
     </div>
+
+    <script>
+        function toggleExplanation() {
+            const explanation = document.getElementById('explanation');
+            const icon = document.getElementById('expand-icon');
+            explanation.classList.toggle('visible');
+            icon.classList.toggle('expanded');
+        }
+
+        function toggleMinimize() {
+            alert('In the real extension, this will minimize/expand the panel!');
+        }
+    </script>
 </body>
 
 </html>

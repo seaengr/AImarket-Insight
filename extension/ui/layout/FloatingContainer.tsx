@@ -75,10 +75,12 @@ export const FloatingContainer: React.FC<FloatingContainerProps> = ({
         };
     }, [isDragging, handleTranslate, onPositionChange, position]);
 
-    // Update position when receiving new props
+    // Update position when receiving new props, but only if not dragging
     useEffect(() => {
-        setPosition(initialPosition);
-    }, [initialPosition]);
+        if (!isDragging) {
+            setPosition(initialPosition);
+        }
+    }, [initialPosition, isDragging]);
 
     return (
         <div

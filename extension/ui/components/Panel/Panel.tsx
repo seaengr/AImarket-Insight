@@ -40,7 +40,11 @@ export const Panel: React.FC<PanelProps> = ({
     // Minimized state - show only icon
     if (panel.isMinimized) {
         return (
-            <div className={cn(styles.panel, styles.panelMinimized)} onClick={onMinimize}>
+            <div
+                className={cn(styles.panel, styles.panelMinimized)}
+                onClick={onMinimize}
+                data-drag-handle="true"
+            >
                 <svg className={styles.minimizedIcon} viewBox="0 0 24 24" fill="currentColor">
                     <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
                 </svg>

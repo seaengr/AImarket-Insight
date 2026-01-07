@@ -6,14 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Market Insight</title>
   <style>
-    :root {
-      --primary: #4a90d9;
-      --secondary: #7c4dff;
-      --bg-dark: #0f1419;
-      --panel-border: rgba(74, 144, 217, 0.3);
-      --glass: rgba(26, 31, 46, 0.95);
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -21,212 +13,189 @@
     }
 
     body {
-      width: 320px;
-      min-height: 250px;
-      background: var(--bg-dark);
-      font-family: 'Inter', -apple-system, sans-serif;
+      width: 300px;
+      min-height: 200px;
+      background: linear-gradient(180deg, #1a1f2e 0%, #0f1419 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       color: #ffffff;
-      padding: 24px;
-      overflow: hidden;
-    }
-
-    .popup-container {
-      position: relative;
-      background: var(--glass);
-      border: 1px solid var(--panel-border);
-      border-radius: 16px;
       padding: 20px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     }
 
     .popup-header {
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 24px;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2a3347;
     }
 
-    .popup-logo {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, rgba(74, 144, 217, 0.2), rgba(124, 77, 255, 0.2));
-      border: 1px solid var(--panel-border);
-      border-radius: 12px;
+    .popup-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #4a90d9 0%, #7c4dff 100%);
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 15px rgba(74, 144, 217, 0.3);
+    }
+
+    .popup-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: #ffffff;
     }
 
     .popup-title {
       font-size: 16px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-weight: 600;
     }
 
     .popup-subtitle {
-      font-size: 11px;
+      font-size: 12px;
       color: #8b95a5;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
       margin-top: 2px;
     }
 
-    .status-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-
-    .status-row {
+    .popup-content {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    .status-row:last-child {
-      margin-bottom: 0;
+    .status-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: #242b3d;
+      border-radius: 8px;
     }
 
     .status-label {
-      font-size: 13px;
+      font-size: 14px;
       color: #8b95a5;
     }
 
-    .status-badge {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.05);
-      color: #8b95a5;
+    .status-value {
+      font-size: 14px;
+      font-weight: 500;
     }
 
-    .status-badge.active {
-      background: rgba(0, 200, 83, 0.15);
+    .status-value.active {
       color: #00c853;
     }
 
-    .status-badge.inactive {
-      background: rgba(255, 82, 82, 0.15);
+    .status-value.inactive {
       color: #ff5252;
     }
 
-    .action-btn {
-      width: 100%;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      border: none;
-      color: white;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
-    }
-
-    .action-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(124, 77, 255, 0.4);
-    }
-
-    .action-btn:active {
-      transform: scale(0.96);
-    }
-
-    .help-footer {
+    .popup-footer {
       margin-top: 20px;
-      text-align: center;
+      padding-top: 16px;
+      border-top: 1px solid #2a3347;
     }
 
     .help-link {
-      color: #8b95a5;
-      font-size: 12px;
-      text-decoration: none;
-      transition: color 0.15s ease;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 6px;
+      gap: 8px;
+      color: #4a90d9;
+      font-size: 13px;
+      text-decoration: none;
+      transition: color 0.15s ease;
     }
 
     .help-link:hover {
-      color: var(--primary);
+      color: #7c4dff;
+    }
+
+    .help-link svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
     }
   </style>
 </head>
 
 <body>
-  <div class="popup-container">
-    <div class="popup-header">
-      <div class="popup-logo">
-        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--primary)" stroke-width="2">
-          <circle cx="12" cy="12" r="9" stroke-opacity="0.3" />
-          <path d="M12 8v8M8 12h8" stroke-opacity="0.8">
-            <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" />
-          </path>
-          <circle cx="12" cy="12" r="3" fill="var(--primary)">
-            <animate attributeName="r" values="2.5;3.5;2.5" dur="1.5s" repeatCount="indefinite" />
-          </circle>
-        </svg>
-      </div>
-      <div>
-        <div class="popup-title">Market Insight</div>
-        <div class="popup-subtitle">Neural Engine v1.0</div>
-      </div>
+  <div class="popup-header">
+    <div class="popup-icon">
+      <svg viewBox="0 0 24 24">
+        <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
+      </svg>
     </div>
-
-    <div class="status-card">
-      <div class="status-row">
-        <span class="status-label">Engine Status</span>
-        <span id="engine-status" class="status-badge">Standby</span>
-      </div>
-      <div class="status-row">
-        <span class="status-label">TradingView</span>
-        <span id="tv-status" class="status-badge inactive">Not Detected</span>
-      </div>
-    </div>
-
-    <button class="action-btn" id="toggle-visibility">Toggle AI Overlay</button>
-
-    <div class="help-footer">
-      <a href="https://github.com/seaengr/AImarket-Insight" target="_blank" class="help-link">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-          <line x1="12" y1="17" x2="12.01" y2="17" />
-        </svg>
-        Documentation & Source
-      </a>
+    <div>
+      <div class="popup-title">AI Market Insight</div>
+      <div class="popup-subtitle">TradingView Overlay</div>
     </div>
   </div>
 
-  <script>
-    const btn = document.getElementById('toggle-visibility');
-    const tvStatus = document.getElementById('tv-status');
-    const engineStatus = document.getElementById('engine-status');
+  <div class="status-item">
+    <span class="status-label">Panel Visibility</span>
+    <button class="toggle-btn" id="toggle-visibility">Show/Hide</button>
+  </div>
+  </div>
 
-    // Handle Toggle
-    btn.addEventListener('click', () => {
+  <style>
+    .toggle-btn {
+      background: linear-gradient(135deg, #4a90d9 0%, #7c4dff 100%);
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    .toggle-btn:hover {
+      opacity: 0.9;
+    }
+
+    .toggle-btn:active {
+      transform: scale(0.95);
+    }
+  </style>
+
+  <script>
+    document.getElementById('toggle-visibility').addEventListener('click', () => {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0]?.id) {
           chrome.tabs.sendMessage(tabs[0].id, { type: 'TOGGLE_PANEL' });
         }
       });
     });
+  </script>
 
-    // Detect TradingView
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  <div class="popup-footer">
+    <a href="#" class="help-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+        <line x1="12" y1="17" x2="12.01" y2="17" />
+      </svg>
+      <span>How to use</span>
+    </a>
+  </div>
+
+  <script>
+    // Check current tab
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const tab = tabs[0];
-      if (tab?.url?.includes('tradingview.com')) {
-        tvStatus.textContent = 'Detected';
-        tvStatus.className = 'status-badge active';
-        engineStatus.textContent = 'Operational';
-        engineStatus.className = 'status-badge active';
+      const pageStatus = document.getElementById('page-status');
+      const panelStatus = document.getElementById('panel-status');
+
+      if (tab.url && tab.url.includes('tradingview.com')) {
+        pageStatus.textContent = 'TradingView';
+        pageStatus.classList.add('active');
+      } else {
+        pageStatus.textContent = 'Not TradingView';
+        pageStatus.classList.add('inactive');
+        panelStatus.textContent = 'Inactive';
+        panelStatus.classList.remove('active');
+        panelStatus.classList.add('inactive');
       }
     });
   </script>
