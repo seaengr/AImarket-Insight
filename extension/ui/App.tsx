@@ -108,9 +108,17 @@ export const App: React.FC = () => {
                         className={styles.panelMinimized}
                         onClick={handleHide}
                         title="Show AI Market Insight"
-                        style={{ opacity: 0.7 }}
+                        style={{ opacity: 0.9 }}
                     >
-                        <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#4a90d9' }}>AI</span>
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#4a90d9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="9" strokeOpacity="0.3" />
+                            <path d="M12 8v8M8 12h8" strokeOpacity="0.8">
+                                <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" />
+                            </path>
+                            <circle cx="12" cy="12" r="3" fill="#4a90d9">
+                                <animate attributeName="r" values="2.5;3.5;2.5" dur="1.5s" repeatCount="indefinite" />
+                            </circle>
+                        </svg>
                     </div>
                 )}
             </FloatingContainer>
