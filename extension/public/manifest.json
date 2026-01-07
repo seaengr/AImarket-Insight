@@ -19,7 +19,7 @@
         "content/inject.js"
       ],
       "css": [
-        "content/overlay.css"
+        "content/content.css"
       ],
       "run_at": "document_idle"
     }
