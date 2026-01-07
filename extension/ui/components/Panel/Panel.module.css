@@ -9,12 +9,13 @@
   overflow: hidden;
   opacity: 0.9;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: bobbing 4s ease-in-out infinite;
+  animation: floatDrift 5s ease-in-out infinite;
 }
 
 .panel:hover {
   opacity: 1;
   animation-play-state: paused;
+  box-shadow: 0 12px 48px rgba(74, 144, 217, 0.2);
 }
 
 .panelMinimized {
@@ -28,7 +29,7 @@
   background: linear-gradient(135deg, #1a1f2e 0%, #242b3d 100%);
   border: 1px solid rgba(74, 144, 217, 0.3);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 10px rgba(74, 144, 217, 0.2);
-  animation: bobbing 3s ease-in-out infinite;
+  animation: floatDrift 4s ease-in-out infinite, pulseGlow 3s ease-in-out infinite;
   opacity: 0.8;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -176,6 +177,42 @@
   }
 }
 
+@keyframes floatDrift {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(3px, -4px);
+  }
+
+  50% {
+    transform: translate(0, -8px);
+  }
+
+  75% {
+    transform: translate(-3px, -4px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(74, 144, 217, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(74, 144, 217, 0.4);
+  }
+
+  100% {
+    box-shadow: 0 0 10px rgba(74, 144, 217, 0.2);
+  }
+}
+
 /* Market Info Grid */
 .marketInfoGrid {
   display: grid;
@@ -266,16 +303,38 @@
   padding-bottom: 0;
 }
 
-@keyframes bobbing {
+@keyframes floatDrift {
   0% {
-    transform: translateY(0px);
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(3px, -4px);
   }
 
   50% {
-    transform: translateY(-6px);
+    transform: translate(0, -8px);
+  }
+
+  75% {
+    transform: translate(-3px, -4px);
   }
 
   100% {
-    transform: translateY(0px);
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 10px rgba(74, 144, 217, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(74, 144, 217, 0.5);
+  }
+
+  100% {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 10px rgba(74, 144, 217, 0.2);
   }
 }
