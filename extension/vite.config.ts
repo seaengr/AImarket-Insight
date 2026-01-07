@@ -9,7 +9,7 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 popup: resolve(__dirname, 'index.html'),
-                content: resolve(__dirname, 'content/inject.ts'),
+                content: resolve(__dirname, 'content/inject.tsx'),
             },
             output: {
                 entryFileNames: (chunkInfo) => {
