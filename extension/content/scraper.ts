@@ -34,11 +34,17 @@ export function scrapeTradingViewData(): ScrapedData | null {
         // Strategy C: Page Title Fallback (SYMBOL — PRICE — TradingView)
         if (!symbolText || symbolText.length > 20) {
             const title = document.title;
-            // Matches "BTCUSD —" or "AAPL 150.00"
             const match = title.match(/^([A-Z0-9.\-_/]+)\s*[—\- ]/i);
             if (match && match[1]) {
                 symbolText = match[1].trim();
             }
+        }
+
+        // Strategy D: URL Analysis (tradingview.com/chart/.../?symbol=EXCHANGE:TICKER)
+        if (!symbolText) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlSymbol = urlParams.get('symbol');
+            if (urlSymbol) symbolText = urlSymbol;
         }
 
         // Clean symbol (remove exchange names like BINANCE:BTCUSD -> BTCUSD)
@@ -55,15 +61,11 @@ export function scrapeTradingViewData(): ScrapedData | null {
             intervalText = intervalButton.textContent?.trim() || '';
         }
 
-        // Strategy B: Legend timeframe
-        if (!intervalText) {
-            const legendInterval = document.querySelector('.js-legend-interval');
-            intervalText = legendInterval?.textContent?.trim() || '';
-        }
-
         // --- Fallbacks and Validation ---
-        const finalSymbol = symbolText || 'BTCUSD';
+        const finalSymbol = symbolText.toUpperCase();
         const finalTimeframe = intervalText || '1H';
+
+        if (!finalSymbol) return null;
 
         return {
             symbol: finalSymbol,
