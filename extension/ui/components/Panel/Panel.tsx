@@ -69,6 +69,20 @@ export const Panel: React.FC<PanelProps> = ({
                         <span className={styles.loadingText}>Analyzing {analysis.marketInfo.symbol}...</span>
                     </div>
                 )}
+
+                {state.error && (
+                    <div className={styles.errorBanner}>
+                        <svg className={styles.errorIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        <div className={styles.errorContent}>
+                            <span className={styles.errorTitle}>Connection Error</span>
+                            <span className={styles.errorMessage}>{state.error}</span>
+                        </div>
+                    </div>
+                )}
                 {/* Market Info Section */}
                 <div className={styles.section}>
                     <div className={styles.marketInfoGrid}>

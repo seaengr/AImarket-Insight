@@ -1,6 +1,6 @@
 /**
  * TradingView DOM Scraper
- * Utilities for extracting market data from the TradingView interface
+ * Optimized utility for extracting market data from TradingView
  */
 
 export interface ScrapedData {
@@ -14,35 +14,21 @@ export interface ScrapedData {
  */
 export function scrapeTradingViewData(): ScrapedData | null {
     try {
-        // --- 1. Find Symbol ---
+        // --- 1. Find Symbol (Fast Strategy) ---
         let symbolText = '';
-
-        // Strategy A: Header toolbar button
         const symbolButton = document.querySelector('#header-toolbar-symbol-search');
         if (symbolButton) {
-            const innerText = Array.from(symbolButton.querySelectorAll('div'))
-                .find(el => el.textContent?.length && el.textContent.length < 15)?.textContent?.trim();
-            if (innerText) symbolText = innerText;
+            symbolText = symbolButton.textContent?.split('—')[0].trim() || '';
         }
 
-        // Strategy B: Chart Legend
         if (!symbolText) {
             const legendSymbol = document.querySelector('.js-symbol-entry, [data-symbol-short]');
             symbolText = legendSymbol?.getAttribute('data-symbol-short') || legendSymbol?.textContent?.trim() || '';
         }
 
-        // Strategy C: Page Title Fallback
-        if (!symbolText || symbolText.length > 20) {
-            const title = document.title;
-            const match = title.match(/^([A-Z0-9.\-_/]+)\s*[—\- ]/i);
-            if (match && match[1]) {
-                symbolText = match[1].trim();
-            }
-        }
-
-        if (symbolText.includes(':')) {
-            symbolText = symbolText.split(':')[1];
-        }
+        // Clean symbol
+        if (symbolText.includes(':')) symbolText = symbolText.split(':')[1];
+        symbolText = symbolText.toUpperCase().trim();
 
         // --- 2. Find Timeframe ---
         let intervalText = '';
@@ -51,87 +37,49 @@ export function scrapeTradingViewData(): ScrapedData | null {
             intervalText = intervalButton.textContent?.trim() || '';
         }
 
-        // --- 3. Find Price (ULTRA-AGGRESSIVE STRATEGY) ---
+        // --- 3. Find Price (SMART & FAST STRATEGY) ---
         let priceValue: number | null = null;
 
-        // Strategy 1: Smart Title Regex (Handles 'XAUUSD 4446.59' or 'XAUUSD — 4446.59')
-        const titleText = document.title;
-        const titlePriceMatch = titleText.match(/([0-9]{2,}[,.]?[0-9]*)/); // Find first long number
-        if (titlePriceMatch && titlePriceMatch[1]) {
-            const cleaned = titlePriceMatch[1].replace(/,/g, '');
-            const parsed = parseFloat(cleaned);
-            if (!isNaN(parsed) && parsed > 1) {
-                // Verify it's not the change percentage
-                if (!titleText.includes(`(${titlePriceMatch[1]}%)`)) {
-                    priceValue = parsed;
-                }
-            }
+        // Step A: Check Page Title (Very fast, no DOM traversal)
+        const titleMatch = document.title.match(/([0-9,.]+)\s*[—\- ]/);
+        if (titleMatch && titleMatch[1]) {
+            const parsed = parseFloat(titleMatch[1].replace(/,/g, ''));
+            if (!isNaN(parsed) && parsed > 0.1) priceValue = parsed;
         }
 
-        // Strategy 2: Label Search (Look for the word "Price" as seen in user's screenshot)
+        // Step B: Target active legend price (Specific selectors only)
         if (priceValue === null) {
-            const allElements = document.querySelectorAll('div, span, [class*="legend"]');
-            for (const el of Array.from(allElements)) {
-                const text = el.textContent?.trim().toLowerCase();
-                if (text === 'price' || text === 'last' || text === 'last price') {
-                    // The value is usually in a sibling or parent's child
-                    const parent = el.parentElement;
-                    if (parent) {
-                        const children = Array.from(parent.children);
-                        const index = children.indexOf(el);
-                        // Scan subsequent siblings for a number
-                        for (let i = index + 1; i < Math.min(index + 4, children.length); i++) {
-                            const childText = children[i].textContent?.trim() || '';
-                            const cleaned = childText.replace(/,/g, '');
-                            const parsed = parseFloat(cleaned);
-                            if (!isNaN(parsed) && parsed > 0.1) {
-                                priceValue = parsed;
-                                break;
-                            }
+            // Find the legend item for the active series
+            const activeLegend = document.querySelector('[data-name="legend-series-item"], .chart-markup-table');
+            if (activeLegend) {
+                // Focus ONLY on elements likely to contain the price
+                const priceElements = activeLegend.querySelectorAll('div[class*="value-"], span[class*="value-"], [class*="last-"]');
+                for (const el of Array.from(priceElements)) {
+                    const text = el.textContent?.trim() || '';
+                    if (/^[0-9,.]+$/.test(text) && text.length > 2) {
+                        const parsed = parseFloat(text.replace(/,/g, ''));
+                        if (!isNaN(parsed) && parsed > 0.1) {
+                            priceValue = parsed;
+                            break;
                         }
                     }
                 }
-                if (priceValue !== null) break;
             }
         }
 
-        // Strategy 3: Chart Legend Classes (Common TV selectors)
+        // Step C: Fallback to the y-axis (Last price label)
         if (priceValue === null) {
-            const legendSelectors = [
-                '[class*="last-value-"]',
-                '[class*="lastPrice-"]',
-                '[data-name="legend-last-value"]',
-                '.js-symbol-last'
-            ];
-
-            for (const selector of legendSelectors) {
-                const els = document.querySelectorAll(selector);
-                for (const el of Array.from(els)) {
-                    const text = el.textContent?.trim() || '';
-                    const parsed = parseFloat(text.replace(/,/g, ''));
-                    if (!isNaN(parsed) && parsed > 0.1) {
-                        priceValue = parsed;
-                        break;
-                    }
-                }
-                if (priceValue !== null) break;
+            const axisPrice = document.querySelector('[class*="priceAxis-"] [class*="last-value-"]');
+            if (axisPrice) {
+                priceValue = parseFloat(axisPrice.textContent?.replace(/,/g, '') || '');
             }
         }
 
-        const finalSymbol = symbolText.toUpperCase();
-        const finalTimeframe = intervalText || '1H';
-
-        if (!finalSymbol) return null;
-
-        if (priceValue === null) {
-            console.warn(`[AI Market Insight] Symbol: ${finalSymbol} | PRICE NOT FOUND. Using fallback.`);
-        } else {
-            console.log(`[AI Market Insight] Symbol: ${finalSymbol} | Price captured: ${priceValue}`);
-        }
+        if (!symbolText) return null;
 
         return {
-            symbol: finalSymbol,
-            timeframe: finalTimeframe,
+            symbol: symbolText,
+            timeframe: intervalText || '1H',
             price: priceValue
         };
     } catch (error) {
