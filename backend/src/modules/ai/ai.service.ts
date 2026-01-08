@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { config } from '../../shared/config';
 import { logger } from '../../shared/logger';
 import { PromptBuilder } from './prompt.builder';
@@ -7,7 +8,7 @@ import { AnalysisResponse } from '../../types/api.types';
 export class AIService {
     /**
      * Generates a natural language explanation for the signal.
-     * Uses real AI (HuggingFace) if configured, else mock.
+     * Uses real AI (HuggingFace/Ollama/Gemini) if configured, else mock.
      */
     async explainSignal(data: AnalysisResponse): Promise<string[]> {
         const { symbol } = data.marketInfo;
@@ -21,36 +22,60 @@ export class AIService {
             logger.info(`Requesting AI explanation for ${symbol} via ${config.ai.provider}`);
             const prompt = PromptBuilder.buildExplanationPrompt(data);
 
-            // Ollama Support
+            // 1. Core Provider Logic
             if (config.ai.provider === 'ollama') {
-                const response = await axios.post(config.ai.ollamaUrl, {
-                    model: config.ai.model,
-                    prompt: prompt,
-                    stream: false,
-                }, { timeout: 60000 });
+                try {
+                    const response = await axios.post(config.ai.ollamaUrl, {
+                        model: config.ai.model,
+                        prompt: prompt,
+                        stream: false,
+                    }, { timeout: 60000 });
 
-                const rawText = response.data.response || '';
-                return this.formatBullets(rawText);
-            }
-
-            // Fallback for HuggingFace if no API key
-            if (!config.ai.apiKey) {
-                return this.generateMockExplanation(symbol, signal, []);
-            }
-
-            const response = await axios.post(
-                `https://api-inference.huggingface.co/models/${config.ai.model}`,
-                { inputs: prompt },
-                {
-                    headers: { Authorization: `Bearer ${config.ai.apiKey}` },
-                    timeout: 5000,
+                    const rawText = response.data.response || '';
+                    return this.formatBullets(rawText);
+                } catch (err: any) {
+                    logger.warn(`Ollama failed (${err.message}), attempting fallback...`);
                 }
-            );
+            }
 
-            const aiText = response.data[0]?.generated_text || '';
-            const cleanText = aiText.replace(prompt, '').trim();
+            // 2. Gemini Fallback/Provider
+            if (config.ai.provider === 'gemini' || config.ai.geminiApiKey) {
+                try {
+                    const genAI = new GoogleGenerativeAI(config.ai.geminiApiKey);
+                    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-            return cleanText ? this.formatBullets(cleanText) : this.generateMockExplanation(symbol, signal, []);
+                    const result = await model.generateContent(prompt);
+                    const response = await result.response;
+                    const text = response.text();
+
+                    return this.formatBullets(text);
+                } catch (err: any) {
+                    logger.warn(`Gemini failed (${err.message}), attempting next fallback...`);
+                }
+            }
+
+            // 3. HuggingFace Fallback/Provider
+            if (config.ai.apiKey) {
+                try {
+                    const response = await axios.post(
+                        `https://api-inference.huggingface.co/models/${config.ai.model}`,
+                        { inputs: prompt },
+                        {
+                            headers: { Authorization: `Bearer ${config.ai.apiKey}` },
+                            timeout: 10000,
+                        }
+                    );
+
+                    const aiText = response.data[0]?.generated_text || '';
+                    const cleanText = aiText.replace(prompt, '').trim();
+
+                    if (cleanText) return this.formatBullets(cleanText);
+                } catch (err: any) {
+                    logger.warn(`HuggingFace failed (${err.message}).`);
+                }
+            }
+
+            return this.generateMockExplanation(symbol, signal, []);
         } catch (error: any) {
             logger.error(`AI explanation failed (${error.message}), falling back to mock`);
             return this.generateMockExplanation(symbol, signal, []);
