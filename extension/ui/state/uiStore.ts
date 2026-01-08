@@ -3,7 +3,7 @@
  * Simple pub/sub state management for the panel
  */
 
-import { MOCK_DATA, DEFAULT_POSITION } from '../../shared/constants';
+import { MOCK_DATA, DEFAULT_POSITION, API_URL } from '../../shared/constants';
 import type { UIState, Subscriber, PanelVisibility, MarketAnalysis } from './types';
 
 // Initial state
@@ -115,7 +115,32 @@ class UIStore {
         }));
     }
 
-    // Analysis updates (for future AI integration)
+    // Analysis updates (Integrated with Backend)
+    async fetchAnalysis(symbol: string, timeframe: string): Promise<void> {
+        this.setLoading(true);
+        this.setError(null);
+
+        try {
+            const response = await fetch(`${API_URL}/analyze`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ symbol, timeframe })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch analysis from backend');
+            }
+
+            const data = await response.json();
+            this.updateAnalysis(data);
+        } catch (error: any) {
+            console.error('[AI Market Insight] Analysis error:', error);
+            this.setError(error.message || 'An unexpected error occurred');
+        } finally {
+            this.setLoading(false);
+        }
+    }
+
     updateAnalysis(analysis: Partial<MarketAnalysis>): void {
         this.setState((state) => ({
             ...state,

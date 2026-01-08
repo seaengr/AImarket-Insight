@@ -63,6 +63,12 @@ export const Panel: React.FC<PanelProps> = ({
             />
 
             <div className={styles.panelContent}>
+                {state.isLoading && (
+                    <div className={styles.loadingOverlay}>
+                        <div className={styles.spinner} />
+                        <span className={styles.loadingText}>Analyzing {analysis.marketInfo.symbol}...</span>
+                    </div>
+                )}
                 {/* Market Info Section */}
                 <div className={styles.section}>
                     <div className={styles.marketInfoGrid}>

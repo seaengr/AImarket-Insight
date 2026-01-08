@@ -6,6 +6,7 @@
 // Extension identification
 export const EXTENSION_ID = 'ai-market-insight';
 export const EXTENSION_NAME = 'AI Market Insight';
+export const API_URL = 'http://localhost:3000'; // Default backend URL
 
 // Panel dimensions
 export const PANEL_WIDTH = 320;

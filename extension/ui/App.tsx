@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { uiStore } from './state/uiStore';
 import type { UIState, PanelVisibility } from './state/types';
 import { FloatingContainer } from './layout/FloatingContainer';
 import { Panel } from './components/Panel/Panel';
 import { SettingsPanel } from './components/Settings/SettingsPanel';
 import styles from './components/Panel/Panel.module.css';
+import { scrapeTradingViewData } from '../content/scraper';
 
 /**
  * App component
@@ -13,17 +14,38 @@ import styles from './components/Panel/Panel.module.css';
  */
 export const App: React.FC = () => {
     const [state, setState] = useState<UIState>(uiStore.getState());
+    const lastSymbolRef = useRef<string>('');
 
-    // Subscribe to store updates
+    // Scrape and fetch analysis logic
+    const refreshAnalysis = useCallback(async () => {
+        const data = scrapeTradingViewData();
+        if (data && data.symbol !== lastSymbolRef.current) {
+            console.log(`[AI Market Insight] Symbol changed: ${data.symbol}, fetching analysis...`);
+            lastSymbolRef.current = data.symbol;
+            await uiStore.fetchAnalysis(data.symbol, data.timeframe);
+        }
+    }, []);
+
+    // Subscribe to store updates and handle initial scrape
     useEffect(() => {
         const unsubscribe = uiStore.subscribe(() => {
             setState(uiStore.getState());
         });
 
+        // Initial scrape
+        refreshAnalysis();
+
+        // Periodic scrape (every 30 seconds)
+        const interval = setInterval(refreshAnalysis, 30000);
+
         // Listen for messages from popup
         const handleMessage = (message: any) => {
             if (message.type === 'TOGGLE_PANEL') {
                 uiStore.togglePanel();
+                // Refresh on showing
+                if (!uiStore.getState().panel.isVisible) {
+                    refreshAnalysis();
+                }
             }
         };
 
@@ -31,6 +53,10 @@ export const App: React.FC = () => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.altKey && e.key.toLowerCase() === 'a') {
                 uiStore.togglePanel();
+                // Refresh on showing
+                if (!uiStore.getState().panel.isVisible) {
+                    refreshAnalysis();
+                }
             }
         };
 
@@ -39,10 +65,11 @@ export const App: React.FC = () => {
 
         return () => {
             unsubscribe();
+            clearInterval(interval);
             chrome.runtime.onMessage.removeListener(handleMessage);
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, []);
+    }, [refreshAnalysis]);
 
     // Event handlers - delegate to store
     const handleMinimize = useCallback(() => {

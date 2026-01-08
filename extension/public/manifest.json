@@ -8,7 +8,8 @@
     "storage"
   ],
   "host_permissions": [
-    "*://*.tradingview.com/*"
+    "*://*.tradingview.com/*",
+    "http://localhost:3000/*"
   ],
   "content_scripts": [
     {
