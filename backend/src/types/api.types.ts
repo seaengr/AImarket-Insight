@@ -7,6 +7,17 @@ export interface MarketData {
         ema20: number;
         ema50: number;
     };
+    mtfTrend: {
+        '1H': string;
+        '4H': string;
+        '1D': string;
+    };
+    momentum: string;
+    volatility: string;
+    newsSentiment?: {
+        sentiment: string;
+        strength: string;
+    };
 }
 
 export interface AnalysisRequest {
@@ -17,6 +28,14 @@ export interface AnalysisRequest {
 
 export type SignalType = 'BUY' | 'SELL' | 'HOLD';
 
+export interface ConfidenceBreakdown {
+    trend: number;
+    correlation: number;
+    momentum: number;
+    volatility: number;
+    news: number;
+}
+
 export interface AnalysisResponse {
     marketInfo: {
         symbol: string;
@@ -26,6 +45,7 @@ export interface AnalysisResponse {
     signal: {
         type: SignalType;
         confidence: number;
+        breakdown: ConfidenceBreakdown;
     };
     levels: {
         entryZone: { low: number; high: number };
@@ -34,4 +54,11 @@ export interface AnalysisResponse {
     };
     explanation: string[];
     timestamp: number;
+    metadata: {
+        momentum: string;
+        volatility: string;
+        correlationValue: number;
+        newsSentiment: string;
+        newsStrength: string;
+    };
 }

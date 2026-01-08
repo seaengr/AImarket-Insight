@@ -6,55 +6,61 @@ import { aiService } from '../modules/ai/ai.service';
 import { logger } from '../shared/logger';
 import { AnalysisResponse } from '../types/api.types';
 
-const AnalyzeSchema = z.object({
+const AnalysisSchema = z.object({
     symbol: z.string().min(1),
-    compareSymbol: z.string().optional().default('BTCUSD'),
-    timeframe: z.string().optional().default('1H'),
+    compareSymbol: z.string().optional(),
+    timeframe: z.string().default('1H'),
+    includeAi: z.boolean().default(true)
 });
 
-export const analyzeSymbol = async (req: Request, res: Response) => {
+export const analyzeController = async (req: Request, res: Response) => {
     try {
-        // 1. Validate Input
-        const { symbol, compareSymbol, timeframe } = AnalyzeSchema.parse(req.body);
-        logger.info(`New analysis request: ${symbol} (vs ${compareSymbol}) [${timeframe}]`);
+        const { symbol, compareSymbol, timeframe, includeAi } = AnalysisSchema.parse(req.body);
+        const compareTo = compareSymbol || symbol;
 
-        // 2. Fetch Market Data
+        // 1. Fetch Market Data
         const marketData = await marketService.getMarketData(symbol);
-        const correlation = marketService.getCorrelation(symbol, compareSymbol);
+        const correlation = marketService.getCorrelation(symbol, compareTo);
 
-        // 3. Generate Signal (Deterministic)
+        // 2. Compute Signal
         const signalResult = signalService.generateSignal(marketData, correlation);
         const levels = signalService.calculateLevels(marketData.price, signalResult.type);
 
-        // 4. Generate AI Explanation
-        const explanation = await aiService.explainSignal(
-            symbol,
-            signalResult.type,
-            signalResult.reasons
-        );
-
-        // 5. Construct Response
-        const response: AnalysisResponse = {
+        // 3. Construct Initial Response (needed for AI)
+        const analysisResponse: AnalysisResponse = {
             marketInfo: {
                 symbol,
-                compareAsset: compareSymbol,
-                timeframe,
+                compareAsset: compareTo,
+                timeframe
             },
             signal: {
                 type: signalResult.type,
                 confidence: signalResult.confidence,
+                breakdown: signalResult.breakdown
             },
             levels,
-            explanation,
+            explanation: [],
             timestamp: Date.now(),
+            metadata: {
+                momentum: marketData.momentum,
+                volatility: marketData.volatility,
+                correlationValue: correlation,
+                newsSentiment: marketData.newsSentiment?.sentiment || 'Neutral',
+                newsStrength: marketData.newsSentiment?.strength || 'Low'
+            }
         };
 
-        res.json(response);
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return res.status(400).json({ error: 'Invalid request data', details: error.flatten() });
+        // 4. Generate AI Explanation
+        if (includeAi) {
+            analysisResponse.explanation = await aiService.explainSignal(analysisResponse);
         }
-        logger.error(error as any, 'Analysis failed');
-        res.status(500).json({ error: 'Internal server error during analysis' });
+
+        res.json(analysisResponse);
+    } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).json({ error: 'Invalid request data', details: error.errors });
+        }
+        logger.error(`Analysis failed: ${error.message}`);
+        res.status(500).json({ error: 'Internal server error' });
     }
 };

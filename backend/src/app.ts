@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { analyzeSymbol } from './api/analyze.controller';
+import { analyzeController } from './api/analyze.controller';
 import { config } from './shared/config';
 import { logger } from './shared/logger';
 
@@ -19,7 +19,7 @@ app.use((req, _res, next) => {
 });
 
 // Routes
-app.post('/analyze', analyzeSymbol);
+app.post('/analyze', analyzeController);
 
 app.get('/health', (_req, res) => {
     res.json({ status: 'UP', timestamp: new Date().toISOString() });
