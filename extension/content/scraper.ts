@@ -51,77 +51,70 @@ export function scrapeTradingViewData(): ScrapedData | null {
             intervalText = intervalButton.textContent?.trim() || '';
         }
 
-        // --- 3. Find Price (ULTRA-ROBUST STRATEGY) ---
+        // --- 3. Find Price (ULTRA-AGGRESSIVE STRATEGY) ---
         let priceValue: number | null = null;
 
-        // Step 1: Check Page Title (Usually the most stable if enabled by user)
-        // Regex looks for a number with decimals following the symbol at the start
-        const titleMatch = document.title.match(/[A-Z0-9.\-_/]+\s+([0-9,.]+)/i);
-        if (titleMatch && titleMatch[1]) {
-            const cleaned = titleMatch[1].replace(/,/g, '');
+        // Strategy 1: Smart Title Regex (Handles 'XAUUSD 4446.59' or 'XAUUSD — 4446.59')
+        const titleText = document.title;
+        const titlePriceMatch = titleText.match(/([0-9]{2,}[,.]?[0-9]*)/); // Find first long number
+        if (titlePriceMatch && titlePriceMatch[1]) {
+            const cleaned = titlePriceMatch[1].replace(/,/g, '');
             const parsed = parseFloat(cleaned);
-            if (!isNaN(parsed) && parsed > 0.00001) {
-                priceValue = parsed;
+            if (!isNaN(parsed) && parsed > 1) {
+                // Verify it's not the change percentage
+                if (!titleText.includes(`(${titlePriceMatch[1]}%)`)) {
+                    priceValue = parsed;
+                }
             }
         }
 
-        // Step 2: Check standard "Last Value" legend items (High priority)
+        // Strategy 2: Label Search (Look for the word "Price" as seen in user's screenshot)
         if (priceValue === null) {
-            // Find all elements that TV typically uses for the "Last Price" in the legend or scale
-            const priceSelectors = [
-                '[class*="last-value-"]',
-                '[class*="lastPrice-"]',
-                '.js-symbol-last',
-                '[data-name="legend-last-value"]',
-                '.price-3_p_TDAc'
-            ];
-
-            for (const selector of priceSelectors) {
-                const els = document.querySelectorAll(selector);
-                for (const el of Array.from(els)) {
-                    const text = el.textContent?.trim() || '';
-                    const cleaned = text.replace(/,/g, '');
-                    const parsed = parseFloat(cleaned);
-                    if (!isNaN(parsed) && parsed > 0.00001 && text.length < 15) {
-                        priceValue = parsed;
-                        break;
+            const allElements = document.querySelectorAll('div, span, [class*="legend"]');
+            for (const el of Array.from(allElements)) {
+                const text = el.textContent?.trim().toLowerCase();
+                if (text === 'price' || text === 'last' || text === 'last price') {
+                    // The value is usually in a sibling or parent's child
+                    const parent = el.parentElement;
+                    if (parent) {
+                        const children = Array.from(parent.children);
+                        const index = children.indexOf(el);
+                        // Scan subsequent siblings for a number
+                        for (let i = index + 1; i < Math.min(index + 4, children.length); i++) {
+                            const childText = children[i].textContent?.trim() || '';
+                            const cleaned = childText.replace(/,/g, '');
+                            const parsed = parseFloat(cleaned);
+                            if (!isNaN(parsed) && parsed > 0.1) {
+                                priceValue = parsed;
+                                break;
+                            }
+                        }
                     }
                 }
                 if (priceValue !== null) break;
             }
         }
 
-        // Step 3: Scan the whole chart legend area for ANY numeric value (Fallback)
+        // Strategy 3: Chart Legend Classes (Common TV selectors)
         if (priceValue === null) {
-            const legendArea = document.querySelector('[data-name="legend-series-item"], .chart-markup-table, .legend-30_TpxX9');
-            if (legendArea) {
-                // Get all divs/spans that might contain values
-                const items = legendArea.querySelectorAll('div, span');
-                for (const item of Array.from(items)) {
-                    const text = item.textContent?.trim() || '';
-                    // Strictly match numeric looking strings to avoid volume or percentage
-                    if (/^[0-9,.]+$/.test(text) && text.includes('.') && text.length > 2) {
-                        const parsed = parseFloat(text.replace(/,/g, ''));
-                        if (!isNaN(parsed) && parsed > 0.1) {
-                            priceValue = parsed;
-                            break;
-                        }
+            const legendSelectors = [
+                '[class*="last-value-"]',
+                '[class*="lastPrice-"]',
+                '[data-name="legend-last-value"]',
+                '.js-symbol-last'
+            ];
+
+            for (const selector of legendSelectors) {
+                const els = document.querySelectorAll(selector);
+                for (const el of Array.from(els)) {
+                    const text = el.textContent?.trim() || '';
+                    const parsed = parseFloat(text.replace(/,/g, ''));
+                    if (!isNaN(parsed) && parsed > 0.1) {
+                        priceValue = parsed;
+                        break;
                     }
                 }
-            }
-        }
-
-        // Step 4: Check Scale labels (The price axis on the right)
-        if (priceValue === null) {
-            const scaleLabels = document.querySelectorAll('[class*="priceAxis-"], [class*="axisLabel-"]');
-            for (const label of Array.from(scaleLabels)) {
-                const text = label.textContent?.trim() || '';
-                const cleaned = text.replace(/,/g, '');
-                const parsed = parseFloat(cleaned);
-                if (!isNaN(parsed) && parsed > 0.1 && text.length < 15) {
-                    priceValue = parsed;
-                    break;
-                }
+                if (priceValue !== null) break;
             }
         }
 
@@ -131,9 +124,9 @@ export function scrapeTradingViewData(): ScrapedData | null {
         if (!finalSymbol) return null;
 
         if (priceValue === null) {
-            console.warn(`[AI Market Insight] Failed to detect price for ${finalSymbol}. Using backend fallback.`);
+            console.warn(`[AI Market Insight] Symbol: ${finalSymbol} | PRICE NOT FOUND. Using fallback.`);
         } else {
-            console.log(`[AI Market Insight] Symbol: ${finalSymbol} | Final Price Found: ${priceValue}`);
+            console.log(`[AI Market Insight] Symbol: ${finalSymbol} | Price captured: ${priceValue}`);
         }
 
         return {
