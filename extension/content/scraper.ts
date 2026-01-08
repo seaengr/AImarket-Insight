@@ -51,46 +51,77 @@ export function scrapeTradingViewData(): ScrapedData | null {
             intervalText = intervalButton.textContent?.trim() || '';
         }
 
-        // --- 3. Find Price (ROBUST STRATEGY) ---
+        // --- 3. Find Price (ULTRA-ROBUST STRATEGY) ---
         let priceValue: number | null = null;
 
-        // Strategy A: Legend Price (The most accurate for the active chart)
-        // TradingView legend price usually has a class containing "last-value" and is near the symbol
-        const legendWrapper = document.querySelector('[data-name="legend-series-item"], .chart-markup-table');
-        if (legendWrapper) {
-            // Look for elements with "last" or "value" in class names
-            const priceCandleEls = legendWrapper.querySelectorAll('div[class*="value-"], span[class*="value-"]');
-            for (const el of Array.from(priceCandleEls)) {
-                const text = el.textContent?.trim() || '';
-                // Matches prices like 4446.59 or 12,345.67
-                if (/^[0-9,.]+$/.test(text) && text.length > 1) {
-                    const parsed = parseFloat(text.replace(/,/g, ''));
-                    if (!isNaN(parsed) && parsed > 0) {
+        // Step 1: Check Page Title (Usually the most stable if enabled by user)
+        // Regex looks for a number with decimals following the symbol at the start
+        const titleMatch = document.title.match(/[A-Z0-9.\-_/]+\s+([0-9,.]+)/i);
+        if (titleMatch && titleMatch[1]) {
+            const cleaned = titleMatch[1].replace(/,/g, '');
+            const parsed = parseFloat(cleaned);
+            if (!isNaN(parsed) && parsed > 0.00001) {
+                priceValue = parsed;
+            }
+        }
+
+        // Step 2: Check standard "Last Value" legend items (High priority)
+        if (priceValue === null) {
+            // Find all elements that TV typically uses for the "Last Price" in the legend or scale
+            const priceSelectors = [
+                '[class*="last-value-"]',
+                '[class*="lastPrice-"]',
+                '.js-symbol-last',
+                '[data-name="legend-last-value"]',
+                '.price-3_p_TDAc'
+            ];
+
+            for (const selector of priceSelectors) {
+                const els = document.querySelectorAll(selector);
+                for (const el of Array.from(els)) {
+                    const text = el.textContent?.trim() || '';
+                    const cleaned = text.replace(/,/g, '');
+                    const parsed = parseFloat(cleaned);
+                    if (!isNaN(parsed) && parsed > 0.00001 && text.length < 15) {
                         priceValue = parsed;
-                        // The first numeric value in the legend is usually the Last Price
                         break;
+                    }
+                }
+                if (priceValue !== null) break;
+            }
+        }
+
+        // Step 3: Scan the whole chart legend area for ANY numeric value (Fallback)
+        if (priceValue === null) {
+            const legendArea = document.querySelector('[data-name="legend-series-item"], .chart-markup-table, .legend-30_TpxX9');
+            if (legendArea) {
+                // Get all divs/spans that might contain values
+                const items = legendArea.querySelectorAll('div, span');
+                for (const item of Array.from(items)) {
+                    const text = item.textContent?.trim() || '';
+                    // Strictly match numeric looking strings to avoid volume or percentage
+                    if (/^[0-9,.]+$/.test(text) && text.includes('.') && text.length > 2) {
+                        const parsed = parseFloat(text.replace(/,/g, ''));
+                        if (!isNaN(parsed) && parsed > 0.1) {
+                            priceValue = parsed;
+                            break;
+                        }
                     }
                 }
             }
         }
 
-        // Strategy B: Page Title (Format: SYMBOL PRICE — TradingView)
+        // Step 4: Check Scale labels (The price axis on the right)
         if (priceValue === null) {
-            const titleMatch = document.title.match(/([0-9,.]+)\s*[—\- ]/);
-            if (titleMatch && titleMatch[1]) {
-                const cleanPrice = titleMatch[1].replace(/,/g, '');
-                const parsed = parseFloat(cleanPrice);
-                if (!isNaN(parsed) && parsed > 1) priceValue = parsed;
-            }
-        }
-
-        // Strategy C: Global Search for price-like elements with high specificity
-        if (priceValue === null) {
-            const lastPriceEl = document.querySelector('.js-symbol-last, [class*="symbol-last"], .price-3_p_TDAc');
-            if (lastPriceEl) {
-                const text = lastPriceEl.textContent?.trim() || '';
-                const parsed = parseFloat(text.replace(/,/g, ''));
-                if (!isNaN(parsed)) priceValue = parsed;
+            const scaleLabels = document.querySelectorAll('[class*="priceAxis-"], [class*="axisLabel-"]');
+            for (const label of Array.from(scaleLabels)) {
+                const text = label.textContent?.trim() || '';
+                const cleaned = text.replace(/,/g, '');
+                const parsed = parseFloat(cleaned);
+                if (!isNaN(parsed) && parsed > 0.1 && text.length < 15) {
+                    priceValue = parsed;
+                    break;
+                }
             }
         }
 
@@ -99,11 +130,10 @@ export function scrapeTradingViewData(): ScrapedData | null {
 
         if (!finalSymbol) return null;
 
-        // Debug logging to help identify why price might be missing
         if (priceValue === null) {
-            console.warn(`[AI Market Insight] Symbol detected (${finalSymbol}) but PRICE IS MISSING. Verify DOM selectors.`);
+            console.warn(`[AI Market Insight] Failed to detect price for ${finalSymbol}. Using backend fallback.`);
         } else {
-            console.log(`[AI Market Insight] SUCCESS: ${finalSymbol} @ ${priceValue}`);
+            console.log(`[AI Market Insight] Symbol: ${finalSymbol} | Final Price Found: ${priceValue}`);
         }
 
         return {
