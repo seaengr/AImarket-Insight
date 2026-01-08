@@ -31,7 +31,7 @@ export const App: React.FC = () => {
             console.log(`[AI Market Insight] Refreshing analysis: ${symbolChanged ? 'Symbol changed' : 'Auto-refresh due'}`);
             lastSymbolRef.current = data.symbol;
             lastRefreshTimeRef.current = now;
-            await uiStore.fetchAnalysis(data.symbol, data.timeframe);
+            await uiStore.fetchAnalysis(data.symbol, data.timeframe, data.price);
         }
     }, [state.panel.autoRefreshEnabled, state.panel.autoRefreshInterval]);
 

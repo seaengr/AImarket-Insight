@@ -133,7 +133,7 @@ class UIStore {
     }
 
     // Analysis updates (Integrated with Backend)
-    async fetchAnalysis(symbol: string, timeframe: string): Promise<void> {
+    async fetchAnalysis(symbol: string, timeframe: string, price: number | null = null): Promise<void> {
         this.setLoading(true);
         this.setError(null);
 
@@ -141,7 +141,7 @@ class UIStore {
             const response = await fetch(`${API_URL}/analyze`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ symbol, timeframe })
+                body: JSON.stringify({ symbol, timeframe, price })
             });
 
             if (!response.ok) {
