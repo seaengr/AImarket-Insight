@@ -23,7 +23,7 @@ export class AIService {
                     model: config.ai.model,
                     prompt: prompt,
                     stream: false,
-                }, { timeout: 10000 });
+                }, { timeout: 60000 });
                 return [response.data.response || ''];
             }
 
