@@ -35,8 +35,8 @@ export const App: React.FC = () => {
         // Initial scrape
         refreshAnalysis();
 
-        // Periodic scrape (every 30 seconds)
-        const interval = setInterval(refreshAnalysis, 30000);
+        // Periodic scrape (every 2 seconds for high responsiveness)
+        const interval = setInterval(refreshAnalysis, 2000);
 
         // Listen for messages from popup
         const handleMessage = (message: any) => {
