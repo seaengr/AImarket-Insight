@@ -15,16 +15,25 @@ import { scrapeTradingViewData } from '../content/scraper';
 export const App: React.FC = () => {
     const [state, setState] = useState<UIState>(uiStore.getState());
     const lastSymbolRef = useRef<string>('');
+    const lastRefreshTimeRef = useRef<number>(0);
 
     // Scrape and fetch analysis logic
-    const refreshAnalysis = useCallback(async () => {
+    const refreshAnalysis = useCallback(async (force: boolean = false) => {
         const data = scrapeTradingViewData();
-        if (data && data.symbol !== lastSymbolRef.current) {
-            console.log(`[AI Market Insight] Symbol changed: ${data.symbol}, fetching analysis...`);
+        if (!data) return;
+
+        const now = Date.now();
+        const symbolChanged = data.symbol !== lastSymbolRef.current;
+        const autoRefreshDue = state.panel.autoRefreshEnabled &&
+            (now - lastRefreshTimeRef.current > state.panel.autoRefreshInterval * 1000);
+
+        if (force || symbolChanged || autoRefreshDue) {
+            console.log(`[AI Market Insight] Refreshing analysis: ${symbolChanged ? 'Symbol changed' : 'Auto-refresh due'}`);
             lastSymbolRef.current = data.symbol;
+            lastRefreshTimeRef.current = now;
             await uiStore.fetchAnalysis(data.symbol, data.timeframe);
         }
-    }, []);
+    }, [state.panel.autoRefreshEnabled, state.panel.autoRefreshInterval]);
 
     // Subscribe to store updates and handle initial scrape
     useEffect(() => {
@@ -100,6 +109,14 @@ export const App: React.FC = () => {
         uiStore.togglePanel();
     }, []);
 
+    const handleToggleAutoRefresh = useCallback(() => {
+        uiStore.toggleAutoRefresh();
+    }, []);
+
+    const handleSetAutoRefreshInterval = useCallback((seconds: number) => {
+        uiStore.setAutoRefreshInterval(seconds);
+    }, []);
+
     const handleReset = useCallback(() => {
         uiStore.reset();
     }, []);
@@ -153,8 +170,12 @@ export const App: React.FC = () => {
             <SettingsPanel
                 isOpen={state.panel.isSettingsOpen}
                 visibility={state.panel.visibility}
+                autoRefreshEnabled={state.panel.autoRefreshEnabled}
+                autoRefreshInterval={state.panel.autoRefreshInterval}
                 onClose={handleCloseSettings}
                 onToggle={handleToggleSection}
+                onToggleAutoRefresh={handleToggleAutoRefresh}
+                onSetAutoRefreshInterval={handleSetAutoRefreshInterval}
                 onReset={handleReset}
             />
         </>

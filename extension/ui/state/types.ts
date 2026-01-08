@@ -71,6 +71,8 @@ export interface PanelState {
         left: number;
     };
     visibility: PanelVisibility;
+    autoRefreshEnabled: boolean;
+    autoRefreshInterval: number; // In seconds
 }
 
 // Complete UI store state

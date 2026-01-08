@@ -19,6 +19,8 @@ const createInitialState = (): UIState => ({
             takeProfit: true,
             stopLoss: true,
         },
+        autoRefreshEnabled: true,
+        autoRefreshInterval: 300, // 5 minutes default
     },
     analysis: {
         marketInfo: { ...MOCK_DATA.marketInfo },
@@ -99,6 +101,21 @@ class UIStore {
         this.setState((state) => ({
             ...state,
             panel: { ...state.panel, position: { top, left } },
+        }));
+    }
+
+    // Actions for auto-refresh
+    toggleAutoRefresh(): void {
+        this.setState((state) => ({
+            ...state,
+            panel: { ...state.panel, autoRefreshEnabled: !state.panel.autoRefreshEnabled },
+        }));
+    }
+
+    setAutoRefreshInterval(seconds: number): void {
+        this.setState((state) => ({
+            ...state,
+            panel: { ...state.panel, autoRefreshInterval: seconds },
         }));
     }
 

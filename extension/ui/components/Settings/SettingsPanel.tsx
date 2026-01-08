@@ -6,20 +6,28 @@ import styles from './Settings.module.css';
 interface SettingsPanelProps {
     isOpen: boolean;
     visibility: PanelVisibility;
+    autoRefreshEnabled: boolean;
+    autoRefreshInterval: number;
     onClose: () => void;
     onToggle: (section: keyof PanelVisibility) => void;
+    onToggleAutoRefresh: () => void;
+    onSetAutoRefreshInterval: (seconds: number) => void;
     onReset: () => void;
 }
 
 /**
  * SettingsPanel component
- * Modal for configuring overlay visibility options
+ * Modal for configuring overlay visibility and auto-refresh options
  */
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     isOpen,
     visibility,
+    autoRefreshEnabled,
+    autoRefreshInterval,
     onClose,
     onToggle,
+    onToggleAutoRefresh,
+    onSetAutoRefreshInterval,
     onReset,
 }) => {
     if (!isOpen) return null;
@@ -89,6 +97,40 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                                 <div className={styles.toggleKnob} />
                             </div>
                         </div>
+                    </div>
+
+                    <div className={styles.settingsGroup}>
+                        <div className={styles.settingsGroupTitle}>Automation</div>
+
+                        <div className={styles.settingsItem}>
+                            <span className={styles.settingsLabel}>Enable Auto Refresh</span>
+                            <div
+                                className={cn(styles.toggle, autoRefreshEnabled && styles.active)}
+                                onClick={onToggleAutoRefresh}
+                                role="switch"
+                                aria-checked={autoRefreshEnabled}
+                                tabIndex={0}
+                            >
+                                <div className={styles.toggleKnob} />
+                            </div>
+                        </div>
+
+                        {autoRefreshEnabled && (
+                            <div className={styles.settingsItem}>
+                                <span className={styles.settingsLabel}>Interval</span>
+                                <select
+                                    className={styles.select}
+                                    value={autoRefreshInterval}
+                                    onChange={(e) => onSetAutoRefreshInterval(Number(e.target.value))}
+                                >
+                                    <option value={60}>1 Minute</option>
+                                    <option value={300}>5 Minutes</option>
+                                    <option value={600}>10 Minutes</option>
+                                    <option value={1800}>30 Minutes</option>
+                                    <option value={3600}>1 Hour</option>
+                                </select>
+                            </div>
+                        )}
                     </div>
                 </div>
 
