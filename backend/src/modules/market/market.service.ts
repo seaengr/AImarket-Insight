@@ -6,13 +6,15 @@ export class MarketService {
      * Fetches latest market data. 
      * In a real app, this would call AlphaVantage/Binance/etc.
      */
-    async getMarketData(symbol: string): Promise<MarketData> {
-        logger.info(`Fetching market data for ${symbol}`);
+    async getMarketData(symbol: string, currentPrice?: number): Promise<MarketData> {
+        logger.info(`Fetching market data for ${symbol}${currentPrice ? ` at ${currentPrice}` : ''}`);
 
         // Mock data for MVP with new fields
+        const price = currentPrice || (symbol.includes('BTC') ? 95000 : 2650);
+
         return {
             symbol,
-            price: symbol.includes('BTC') ? 95000 : 2650,
+            price,
             change24h: 2.5,
             indicators: {
                 rsi: 65,

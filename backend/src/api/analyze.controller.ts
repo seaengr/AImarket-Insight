@@ -10,16 +10,17 @@ const AnalysisSchema = z.object({
     symbol: z.string().min(1),
     compareSymbol: z.string().optional(),
     timeframe: z.string().default('1H'),
+    price: z.number().optional().nullable(),
     includeAi: z.boolean().default(true)
 });
 
 export const analyzeController = async (req: Request, res: Response) => {
     try {
-        const { symbol, compareSymbol, timeframe, includeAi } = AnalysisSchema.parse(req.body);
+        const { symbol, compareSymbol, timeframe, price, includeAi } = AnalysisSchema.parse(req.body);
         const compareTo = compareSymbol || symbol;
 
         // 1. Fetch Market Data
-        const marketData = await marketService.getMarketData(symbol);
+        const marketData = await marketService.getMarketData(symbol, price ?? undefined);
         const correlation = marketService.getCorrelation(symbol, compareTo);
 
         // 2. Compute Signal
@@ -58,7 +59,7 @@ export const analyzeController = async (req: Request, res: Response) => {
         res.json(analysisResponse);
     } catch (error: any) {
         if (error instanceof z.ZodError) {
-            return res.status(400).json({ error: 'Invalid request data', details: error.errors });
+            return res.status(400).json({ error: 'Invalid request data', details: error.issues });
         }
         logger.error(`Analysis failed: ${error.message}`);
         res.status(500).json({ error: 'Internal server error' });
