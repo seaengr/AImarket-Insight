@@ -140,7 +140,7 @@ export const App: React.FC = () => {
                         state={state}
                         onMinimize={handleMinimize}
                         onSettingsClick={handleSettings}
-                        onHide={handleHide}
+                        onRefresh={() => refreshAnalysis(true)}
                         onDragStart={handleDragStart}
                         onToggleSection={handleToggleSection}
                         onToggleExplanation={handleToggleExplanation}

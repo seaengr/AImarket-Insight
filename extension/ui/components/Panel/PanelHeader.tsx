@@ -5,7 +5,7 @@ interface PanelHeaderProps {
     title: string;
     onSettingsClick: () => void;
     onMinimizeClick: () => void;
-    onCloseClick: () => void;
+    onRefreshClick: () => void;
     onDragStart: (e: React.MouseEvent) => void;
 }
 
@@ -18,7 +18,7 @@ export const PanelHeader: React.FC<PanelHeaderProps> = ({
     title,
     onSettingsClick,
     onMinimizeClick,
-    onCloseClick,
+    onRefreshClick,
     onDragStart,
 }) => {
     return (
@@ -48,12 +48,13 @@ export const PanelHeader: React.FC<PanelHeaderProps> = ({
                 </button>
                 <button
                     className={styles.iconButton}
-                    onClick={onCloseClick}
-                    aria-label="Hide"
-                    title="Hide panel"
+                    onClick={onRefreshClick}
+                    aria-label="Refresh"
+                    title="Refresh analysis"
                 >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M18 6L6 18M6 6l12 12" />
+                        <path d="M23 4v6h-6" />
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
                     </svg>
                 </button>
             </div>

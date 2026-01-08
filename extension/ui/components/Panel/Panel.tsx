@@ -15,7 +15,7 @@ interface PanelProps {
     state: UIState;
     onMinimize: () => void;
     onSettingsClick: () => void;
-    onHide: () => void;
+    onRefresh: () => void;
     onDragStart: (e: React.MouseEvent) => void;
     onToggleSection: (section: 'entryZone' | 'takeProfit' | 'stopLoss') => void;
     onToggleExplanation: () => void;
@@ -30,7 +30,7 @@ export const Panel: React.FC<PanelProps> = ({
     state,
     onMinimize,
     onSettingsClick,
-    onHide,
+    onRefresh,
     onDragStart,
     onToggleSection,
     onToggleExplanation,
@@ -58,7 +58,7 @@ export const Panel: React.FC<PanelProps> = ({
                 title={EXTENSION_NAME}
                 onSettingsClick={onSettingsClick}
                 onMinimizeClick={onMinimize}
-                onCloseClick={onHide}
+                onRefreshClick={onRefresh}
                 onDragStart={onDragStart}
             />
 
