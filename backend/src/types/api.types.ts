@@ -6,6 +6,12 @@ export interface MarketData {
         rsi: number;
         ema20: number;
         ema50: number;
+        macd?: {
+            value: number;
+            signal: number;
+            histogram: number;
+        };
+        adx?: number;
     };
     mtfTrend: {
         '1H': string;

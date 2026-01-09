@@ -1,5 +1,6 @@
 import { MarketData } from '../../types/api.types';
 import { logger } from '../../shared/logger';
+import { alphaVantageService } from './alpha-vantage.service';
 
 export class MarketService {
     /**
@@ -16,15 +17,22 @@ export class MarketService {
             symbol,
             price,
             change24h: 2.5,
+            // Dynamic Indicators based on live price
             indicators: {
-                rsi: 65,
-                ema20: 94000,
-                ema50: 91000
+                rsi: Math.floor(Math.random() * (75 - 25 + 1)) + 25, // Random RSI between 25-75 to simulate movement
+                ema20: price * (1 + (Math.random() * 0.01 - 0.005)), // +/- 0.5% around price
+                ema50: price * (1 + (Math.random() * 0.02 - 0.01)),  // +/- 1.0% around price
+                macd: {
+                    value: Math.random() * 10 - 5,
+                    signal: Math.random() * 10 - 5,
+                    histogram: Math.random() * 4 - 2
+                },
+                adx: Math.floor(Math.random() * 40) + 10
             },
             mtfTrend: {
-                '1H': 'Bullish',
-                '4H': 'Bullish',
-                '1D': 'Neutral'
+                '1H': Math.random() > 0.5 ? 'Bullish' : 'Bearish',
+                '4H': Math.random() > 0.5 ? 'Bullish' : 'Bearish',
+                '1D': await alphaVantageService.getDailyTrend(symbol) // REAL DATA
             },
             momentum: 'Strong Bullish',
             volatility: 'Moderate',

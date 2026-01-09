@@ -19,6 +19,7 @@ export class SignalService {
 
         // Breakdown components (max 100 total for confidence)
         let trend = 0;
+        let mtfScore = 0; // New MTF Component
         let corr = 0;
         let momentum = 0;
         let volatility = 0;
@@ -26,13 +27,36 @@ export class SignalService {
 
         const reasons: string[] = [];
 
-        // Trend Breakdown
+        // Trend Breakdown (Single Timeframe)
         if (data.price > ema20 && ema20 > ema50) {
-            trend = 30;
-            reasons.push('Price is above EMA20 and EMA50 (Strong Uptrend)');
+            trend = 20;
+            reasons.push('Price is above EMA20 and EMA50 (Uptrend)');
         } else if (data.price < ema20 && ema20 < ema50) {
-            trend = -30;
-            reasons.push('Price is below EMA20 and EMA50 (Strong Downtrend)');
+            trend = -20;
+            reasons.push('Price is below EMA20 and EMA50 (Downtrend)');
+        }
+
+        // --- MTF Confluence (The "Secret Sauce") ---
+        const { '1H': tf1h, '4H': tf4h, '1D': tf1d } = data.mtfTrend;
+        const isBullishConfluence = tf1h === 'Bullish' && tf4h === 'Bullish';
+        const isBearishConfluence = tf1h === 'Bearish' && tf4h === 'Bearish';
+
+        if (isBullishConfluence) {
+            mtfScore = 25;
+            reasons.push(`Strong Confluence: 1H & 4H are both Bullish`);
+            if (tf1d === 'Bullish') {
+                mtfScore += 10;
+                reasons.push('Daily (1D) Trend aligned - High Probability Setup');
+            }
+        } else if (isBearishConfluence) {
+            mtfScore = -25;
+            reasons.push(`Strong Confluence: 1H & 4H are both Bearish`);
+            if (tf1d === 'Bearish') {
+                mtfScore -= 10;
+                reasons.push('Daily (1D) Trend aligned - High Probability Setup');
+            }
+        } else {
+            reasons.push('Mixed Signals across timeframes (Caution)');
         }
 
         // Correlation Breakdown
@@ -62,7 +86,7 @@ export class SignalService {
             reasons.push('Market sentiment is positive based on recent news');
         }
 
-        const totalScore = trend + corr + momentum + volatility + news;
+        const totalScore = trend + mtfScore + corr + momentum + volatility + news;
         const finalConfidence = Math.abs(totalScore);
 
         let type: SignalType = 'HOLD';
@@ -73,7 +97,7 @@ export class SignalService {
             type,
             confidence: Math.min(finalConfidence, 100),
             breakdown: {
-                trend: Math.abs(trend),
+                trend: Math.abs(trend + mtfScore), // Combine for UI simplicity
                 correlation: Math.abs(corr),
                 momentum: Math.abs(momentum),
                 volatility: Math.abs(volatility),
