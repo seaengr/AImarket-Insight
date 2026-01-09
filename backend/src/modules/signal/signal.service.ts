@@ -41,13 +41,13 @@ export class SignalService {
             reasons.push('High positive correlation with benchmark asset');
         }
 
-        // Momentum Breakdown
-        if (rsi < 30) {
+        // Momentum Breakdown (Day Trading Tuning: 35/65)
+        if (rsi < 35) {
             momentum = 25;
-            reasons.push('RSI is Oversold (<30)');
-        } else if (rsi > 70) {
+            reasons.push('RSI is Oversold (<35) - Bullish Momentum');
+        } else if (rsi > 65) {
             momentum = -25;
-            reasons.push('RSI is Overbought (>70)');
+            reasons.push('RSI is Overbought (>65) - Bearish Pressure');
         }
 
         // Volatility Breakdown
@@ -84,17 +84,31 @@ export class SignalService {
     }
 
     calculateLevels(price: number, type: SignalType) {
-        const atr = price * 0.02;
+        // --- Day Trading & Scalping Profile (0.5% Volatility) ---
+        const atr = price * 0.005;
+
+        // Tight Entry Zone (0.1% buffer)
+        const entryLow = price * 0.999;
+        const entryHigh = price * 1.001;
+
         if (type === 'BUY') {
             return {
-                entryZone: { low: price * 0.995, high: price * 1.005 },
-                takeProfit: { tp1: price + atr, tp2: price + (atr * 2), tp3: price + (atr * 3) },
+                entryZone: { low: entryLow, high: entryHigh },
+                takeProfit: {
+                    tp1: price + atr,           // 1:1 RR
+                    tp2: price + (atr * 1.5),   // 1.5:1 RR
+                    tp3: price + (atr * 2)      // 2:1 RR
+                },
                 stopLoss: price - atr
             };
         }
         return {
-            entryZone: { low: price * 0.995, high: price * 1.005 },
-            takeProfit: { tp1: price - atr, tp2: price - (atr * 2) },
+            entryZone: { low: entryLow, high: entryHigh },
+            takeProfit: {
+                tp1: price - atr,
+                tp2: price - (atr * 1.5),
+                tp3: price - (atr * 2.5)
+            },
             stopLoss: price + atr
         };
     }
