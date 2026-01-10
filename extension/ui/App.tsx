@@ -45,7 +45,8 @@ export const App: React.FC = () => {
         refreshAnalysis();
 
         // Periodic scrape (every 2 seconds for high responsiveness)
-        const interval = setInterval(refreshAnalysis, 2000);
+        // Auto-refresh disabled per user request - manual refresh only!
+        // const interval = setInterval(refreshAnalysis, 2000);
 
         // Listen for messages from popup
         const handleMessage = (message: any) => {
@@ -74,7 +75,7 @@ export const App: React.FC = () => {
 
         return () => {
             unsubscribe();
-            clearInterval(interval);
+            // clearInterval(interval);
             chrome.runtime.onMessage.removeListener(handleMessage);
             window.removeEventListener('keydown', handleKeyDown);
         };

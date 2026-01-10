@@ -4,7 +4,9 @@ export interface MarketData {
     change24h: number;
     indicators: {
         rsi: number;
-        ema20: number;
+        ema9: number;
+        ema21: number;
+        ema20: number; // Keeping for backward compatibility
         ema50: number;
         macd?: {
             value: number;

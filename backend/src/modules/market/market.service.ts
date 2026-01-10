@@ -20,7 +20,9 @@ export class MarketService {
             // Dynamic Indicators based on live price
             indicators: {
                 rsi: Math.floor(Math.random() * (75 - 25 + 1)) + 25, // Random RSI between 25-75 to simulate movement
-                ema20: price * (1 + (Math.random() * 0.01 - 0.005)), // +/- 0.5% around price
+                ema9: price * (1 + (Math.random() * 0.005 - 0.0025)), // +/- 0.25% around price (Fast)
+                ema21: price * (1 + (Math.random() * 0.01 - 0.005)), // +/- 0.5% around price (Slow)
+                ema20: price * (1 + (Math.random() * 0.01 - 0.005)), // Legacy
                 ema50: price * (1 + (Math.random() * 0.02 - 0.01)),  // +/- 1.0% around price
                 macd: {
                     value: Math.random() * 10 - 5,

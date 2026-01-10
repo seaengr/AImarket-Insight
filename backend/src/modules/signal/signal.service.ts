@@ -24,10 +24,29 @@ export class SignalService {
         let momentum = 0;
         let volatility = 0;
         let news = 0;
+        let pineScript = 0; // New Pine Script Component
 
         const reasons: string[] = [];
 
-        // Trend Breakdown (Single Timeframe)
+        // Trend Breakdown (Single Timeframe) & Pine Script Logic
+        const { ema9, ema21 } = data.indicators;
+
+        // Pine Script: "Simple Pullback" Logic
+        const isPineUptrend = ema9 > ema21;
+        const isPineDowntrend = ema9 < ema21;
+
+        // Logic: Price pulls back to Fast EMA (wicks down) but stays above Slow EMA
+        const isPullbackBuy = isPineUptrend && data.price <= (ema9 * 1.0005) && data.price > ema21;
+        const isPullbackSell = isPineDowntrend && data.price >= (ema9 * 0.9995) && data.price < ema21;
+
+        if (isPullbackBuy) {
+            pineScript = 30;
+            reasons.push('Pine Script: Classic Pullback Buy Setup (Bounce off EMA9)');
+        } else if (isPullbackSell) {
+            pineScript = -30;
+            reasons.push('Pine Script: Classic Pullback Sell Setup (Reject off EMA9)');
+        }
+
         if (data.price > ema20 && ema20 > ema50) {
             trend = 20;
             reasons.push('Price is above EMA20 and EMA50 (Uptrend)');
@@ -86,7 +105,7 @@ export class SignalService {
             reasons.push('Market sentiment is positive based on recent news');
         }
 
-        const totalScore = trend + mtfScore + corr + momentum + volatility + news;
+        const totalScore = trend + mtfScore + corr + momentum + volatility + news + pineScript;
         const finalConfidence = Math.abs(totalScore);
 
         let type: SignalType = 'HOLD';
@@ -102,6 +121,8 @@ export class SignalService {
                 momentum: Math.abs(momentum),
                 volatility: Math.abs(volatility),
                 news: Math.abs(news)
+                // Pine script score is implicitly added to 'trend' in breakdown for now, or could be separate.
+                // For UI simplicity, adding it to trend or making 'strategy' category.
             },
             reasons
         };

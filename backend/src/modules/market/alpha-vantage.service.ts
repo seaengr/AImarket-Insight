@@ -39,7 +39,7 @@ export class AlphaVantageService {
             logger.info(`[AlphaVantage] Fetching real Daily Trend for ${symbol}...`);
             const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${config.market.alphaVantageApiKey}`;
 
-            const response = await axios.get<AlphaVantageResponse>(url);
+            const response = await axios.get<AlphaVantageResponse>(url, { timeout: 2000 });
             const data = response.data['Time Series (Daily)'];
 
             if (!data) {
