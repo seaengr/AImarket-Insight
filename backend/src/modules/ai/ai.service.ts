@@ -22,23 +22,7 @@ export class AIService {
             logger.info(`Requesting AI explanation for ${symbol} via ${config.ai.provider}`);
             const prompt = PromptBuilder.buildExplanationPrompt(data);
 
-            // 1. Core Provider Logic
-            if (config.ai.provider === 'ollama') {
-                try {
-                    const response = await axios.post(config.ai.ollamaUrl, {
-                        model: config.ai.model,
-                        prompt: prompt,
-                        stream: false,
-                    }, { timeout: 60000 });
-
-                    const rawText = response.data.response || '';
-                    return this.formatBullets(rawText);
-                } catch (err: any) {
-                    logger.warn(`Ollama failed (${err.message}), attempting fallback...`);
-                }
-            }
-
-            // 2. Gemini Fallback/Provider
+            // 1. Check Configured Provider: GEMINI (Primary)
             if (config.ai.provider === 'gemini' || config.ai.geminiApiKey) {
                 try {
                     const genAI = new GoogleGenerativeAI(config.ai.geminiApiKey);
@@ -50,11 +34,27 @@ export class AIService {
 
                     return this.formatBullets(text);
                 } catch (err: any) {
-                    logger.warn(`Gemini failed (${err.message}), attempting next fallback...`);
+                    logger.warn(`Gemini failed (${err.message}), attempting fallback to Ollama...`);
                 }
             }
 
-            // 3. HuggingFace Fallback/Provider
+            // 2. Check Configured Provider: OLLAMA (Secondary / Fallback)
+            if (config.ai.provider === 'ollama' || config.ai.provider === 'gemini') {
+                try {
+                    const response = await axios.post(config.ai.ollamaUrl, {
+                        model: config.ai.model,
+                        prompt: prompt,
+                        stream: false,
+                    }, { timeout: 60000 });
+
+                    const rawText = response.data.response || '';
+                    return this.formatBullets(rawText);
+                } catch (err: any) {
+                    logger.warn(`Ollama failed (${err.message}), attempting fallback to HuggingFace...`);
+                }
+            }
+
+            // 3. Last Resort: HuggingFace
             if (config.ai.apiKey) {
                 try {
                     const response = await axios.post(
