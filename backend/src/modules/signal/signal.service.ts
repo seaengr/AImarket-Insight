@@ -56,9 +56,23 @@ export class SignalService {
         }
 
         // --- MTF Confluence (The "Secret Sauce") ---
-        const { '1H': tf1h, '4H': tf4h, '1D': tf1d } = data.mtfTrend;
+        // --- MTF Confluence (The "Secret Sauce") ---
+        const { '5m': tf5m, '15m': tf15m, '1H': tf1h, '4H': tf4h, '1D': tf1d } = data.mtfTrend;
         const isBullishConfluence = tf1h === 'Bullish' && tf4h === 'Bullish';
         const isBearishConfluence = tf1h === 'Bearish' && tf4h === 'Bearish';
+
+        // Micro-Trend Verification (Sniper Entry)
+        if (tf5m === 'Bullish' || tf15m === 'Bullish') {
+            if (trend > 0 || isBullishConfluence) {
+                mtfScore += 10;
+                reasons.push('Micro-Trend (5m/15m) aligns Bullish - Sniper Entry');
+            }
+        } else if (tf5m === 'Bearish' || tf15m === 'Bearish') {
+            if (trend < 0 || isBearishConfluence) {
+                mtfScore -= 10;
+                reasons.push('Micro-Trend (5m/15m) aligns Bearish - Sniper Entry');
+            }
+        }
 
         if (isBullishConfluence) {
             mtfScore = 25;

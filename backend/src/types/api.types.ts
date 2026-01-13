@@ -16,6 +16,8 @@ export interface MarketData {
         adx?: number;
     };
     mtfTrend: {
+        '5m': string;
+        '15m': string;
         '1H': string;
         '4H': string;
         '1D': string;
