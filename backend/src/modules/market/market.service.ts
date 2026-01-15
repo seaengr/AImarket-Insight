@@ -20,6 +20,7 @@ export class MarketService {
             ema21: price * (1 + (Math.random() * 0.01 - 0.005)), // +/- 0.5% around price (Slow)
             ema20: price * (1 + (Math.random() * 0.01 - 0.005)), // Legacy
             ema50: price * (1 + (Math.random() * 0.02 - 0.01)),  // +/- 1.0% around price
+            ema200: price * (1 + (Math.random() * 0.05 - 0.025)), // +/- 2.5% around price (Major Trend)
             macd: {
                 value: Math.random() * 10 - 5,
                 signal: Math.random() * 10 - 5,
@@ -28,9 +29,11 @@ export class MarketService {
             adx: Math.floor(Math.random() * 40) + 10
         };
 
-        // Micro-Trend Simulation (Derived from Instant Momentum)
+        // Micro-Trend Simulation
+        // 5m: Fast Momentum (RSI or pull to Fast EMA)
         const is5mBullish = indicators.rsi > 55 || price > indicators.ema9;
-        const is15mBullish = indicators.rsi > 50 || price > indicators.ema21;
+        // 15m: Sustained Trend (Price above EMA 21 and 200)
+        const is15mBullish = indicators.rsi > 50 || (price > indicators.ema21 && price > indicators.ema200);
 
         return {
             symbol,

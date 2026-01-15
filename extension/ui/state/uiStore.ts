@@ -4,6 +4,7 @@
  */
 
 import { MOCK_DATA, DEFAULT_POSITION, API_URL } from '../../shared/constants';
+import { triggerSignalAlert } from '../../shared/alerts';
 import type { UIState, Subscriber, PanelVisibility, MarketAnalysis } from './types';
 
 // Initial state
@@ -149,6 +150,19 @@ class UIStore {
             }
 
             const data = await response.json();
+
+            // Detect if signal changed and trigger alert
+            const previousSignal = this.state.analysis.signal.type;
+            const newSignal = data.signal?.type;
+
+            if (newSignal && newSignal !== 'HOLD' && newSignal !== previousSignal) {
+                triggerSignalAlert(
+                    newSignal,
+                    data.marketInfo?.symbol || 'Unknown',
+                    data.signal?.confidence || 0
+                );
+            }
+
             this.updateAnalysis(data);
         } catch (error: any) {
             console.error('[AI Market Insight] Analysis error:', error);

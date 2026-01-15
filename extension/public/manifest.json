@@ -5,7 +5,8 @@
   "description": "AI-powered market insight panel overlay for TradingView charts",
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "notifications"
   ],
   "host_permissions": [
     "*://*.tradingview.com/*",

@@ -8,6 +8,7 @@ export interface MarketData {
         ema21: number;
         ema20: number; // Keeping for backward compatibility
         ema50: number;
+        ema200: number;
         macd?: {
             value: number;
             signal: number;
