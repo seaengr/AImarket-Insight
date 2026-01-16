@@ -45,8 +45,7 @@ export const App: React.FC = () => {
         refreshAnalysis();
 
         // Periodic scrape (every 2 seconds for high responsiveness)
-        // Auto-refresh disabled per user request - manual refresh only!
-        // const interval = setInterval(refreshAnalysis, 2000);
+        const interval = setInterval(refreshAnalysis, 2000);
 
         // Listen for messages from popup
         const handleMessage = (message: any) => {
@@ -75,7 +74,7 @@ export const App: React.FC = () => {
 
         return () => {
             unsubscribe();
-            // clearInterval(interval);
+            clearInterval(interval);
             chrome.runtime.onMessage.removeListener(handleMessage);
             window.removeEventListener('keydown', handleKeyDown);
         };
@@ -170,11 +169,9 @@ export const App: React.FC = () => {
 
             <SettingsPanel
                 isOpen={state.panel.isSettingsOpen}
-                visibility={state.panel.visibility}
                 autoRefreshEnabled={state.panel.autoRefreshEnabled}
                 autoRefreshInterval={state.panel.autoRefreshInterval}
                 onClose={handleCloseSettings}
-                onToggle={handleToggleSection}
                 onToggleAutoRefresh={handleToggleAutoRefresh}
                 onSetAutoRefreshInterval={handleSetAutoRefreshInterval}
                 onReset={handleReset}

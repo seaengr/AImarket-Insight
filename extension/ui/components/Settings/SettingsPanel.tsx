@@ -1,15 +1,12 @@
 import React from 'react';
 import { cn } from '../../../shared/utils';
-import type { PanelVisibility } from '../../state/types';
 import styles from './Settings.module.css';
 
 interface SettingsPanelProps {
     isOpen: boolean;
-    visibility: PanelVisibility;
     autoRefreshEnabled: boolean;
     autoRefreshInterval: number;
     onClose: () => void;
-    onToggle: (section: keyof PanelVisibility) => void;
     onToggleAutoRefresh: () => void;
     onSetAutoRefreshInterval: (seconds: number) => void;
     onReset: () => void;
@@ -21,11 +18,9 @@ interface SettingsPanelProps {
  */
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     isOpen,
-    visibility,
     autoRefreshEnabled,
     autoRefreshInterval,
     onClose,
-    onToggle,
     onToggleAutoRefresh,
     onSetAutoRefreshInterval,
     onReset,
@@ -57,56 +52,17 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
                 <div className={styles.settingsContent}>
                     <div className={styles.settingsGroup}>
-                        <div className={styles.settingsGroupTitle}>Chart Overlays</div>
-
-                        <div className={styles.settingsItem}>
-                            <span className={styles.settingsLabel}>Entry Zone</span>
-                            <div
-                                className={cn(styles.toggle, visibility.entryZone && styles.active)}
-                                onClick={() => onToggle('entryZone')}
-                                role="switch"
-                                aria-checked={visibility.entryZone}
-                                tabIndex={0}
-                            >
-                                <div className={styles.toggleKnob} />
-                            </div>
-                        </div>
-
-                        <div className={styles.settingsItem}>
-                            <span className={styles.settingsLabel}>Take Profit Levels</span>
-                            <div
-                                className={cn(styles.toggle, visibility.takeProfit && styles.active)}
-                                onClick={() => onToggle('takeProfit')}
-                                role="switch"
-                                aria-checked={visibility.takeProfit}
-                                tabIndex={0}
-                            >
-                                <div className={styles.toggleKnob} />
-                            </div>
-                        </div>
-
-                        <div className={styles.settingsItem}>
-                            <span className={styles.settingsLabel}>Stop Loss</span>
-                            <div
-                                className={cn(styles.toggle, visibility.stopLoss && styles.active)}
-                                onClick={() => onToggle('stopLoss')}
-                                role="switch"
-                                aria-checked={visibility.stopLoss}
-                                tabIndex={0}
-                            >
-                                <div className={styles.toggleKnob} />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className={styles.settingsGroup}>
                         <div className={styles.settingsGroupTitle}>Automation</div>
 
-                        <div className={styles.settingsItem}>
+                        <div
+                            className={styles.settingsItem}
+                            onClick={(e) => { e.stopPropagation(); onToggleAutoRefresh(); }}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            style={{ cursor: 'pointer' }}
+                        >
                             <span className={styles.settingsLabel}>Enable Auto Refresh</span>
                             <div
                                 className={cn(styles.toggle, autoRefreshEnabled && styles.active)}
-                                onClick={onToggleAutoRefresh}
                                 role="switch"
                                 aria-checked={autoRefreshEnabled}
                                 tabIndex={0}
@@ -122,6 +78,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                                     className={styles.select}
                                     value={autoRefreshInterval}
                                     onChange={(e) => onSetAutoRefreshInterval(Number(e.target.value))}
+                                    onClick={(e) => e.stopPropagation()}
+                                    onMouseDown={(e) => e.stopPropagation()}
                                 >
                                     <option value={60}>1 Minute</option>
                                     <option value={300}>5 Minutes</option>
@@ -134,8 +92,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     </div>
                 </div>
 
-                <div className={styles.settingsFooter}>
-                    <button className={styles.resetButton} onClick={onReset}>
+                <div className={styles.settingsFooter} onMouseDown={(e) => e.stopPropagation()}>
+                    <button className={styles.resetButton} onClick={(e) => { e.stopPropagation(); onReset(); }}>
                         Reset to Defaults
                     </button>
                 </div>

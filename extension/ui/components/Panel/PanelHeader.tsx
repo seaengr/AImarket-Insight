@@ -27,7 +27,8 @@ export const PanelHeader: React.FC<PanelHeaderProps> = ({
             <div className={styles.headerActions}>
                 <button
                     className={styles.iconButton}
-                    onClick={onSettingsClick}
+                    onClick={(e) => { e.stopPropagation(); onSettingsClick(); }}
+                    onMouseDown={(e) => e.stopPropagation()}
                     aria-label="Settings"
                     title="Settings"
                 >
@@ -38,7 +39,8 @@ export const PanelHeader: React.FC<PanelHeaderProps> = ({
                 </button>
                 <button
                     className={styles.iconButton}
-                    onClick={onMinimizeClick}
+                    onClick={(e) => { e.stopPropagation(); onMinimizeClick(); }}
+                    onMouseDown={(e) => e.stopPropagation()}
                     aria-label="Minimize"
                     title="Minimize panel"
                 >
@@ -48,7 +50,8 @@ export const PanelHeader: React.FC<PanelHeaderProps> = ({
                 </button>
                 <button
                     className={styles.iconButton}
-                    onClick={onRefreshClick}
+                    onClick={(e) => { e.stopPropagation(); onRefreshClick(); }}
+                    onMouseDown={(e) => e.stopPropagation()}
                     aria-label="Refresh"
                     title="Refresh analysis"
                 >

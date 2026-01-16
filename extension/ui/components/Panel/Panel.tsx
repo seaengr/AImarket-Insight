@@ -45,8 +45,12 @@ export const Panel: React.FC<PanelProps> = ({
                 onClick={onMinimize}
                 data-drag-handle="true"
             >
-                <svg className={styles.minimizedIcon} viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
+                <svg className={styles.minimizedIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    {/* Brain outline */}
+                    <path d="M12 4.5c-1.5-1-3.5-1-5 0s-2.5 3-2 5c-1 1-1.5 2.5-1 4s2 2.5 3.5 2.5c0 1.5 1 3 2.5 3.5s3-.5 4-2c1 1.5 2.5 2.5 4 2s2.5-2 2.5-3.5c1.5 0 3-1 3.5-2.5s0-3-1-4c.5-2-.5-4-2-5s-3.5-1-5 0" strokeLinecap="round" />
+                    {/* Upward trend arrow */}
+                    <path d="M7 15l4-4 2 2 4-5" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" stroke="#00d4aa" />
+                    <path d="M14 8h3v3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" stroke="#00d4aa" />
                 </svg>
             </div>
         );

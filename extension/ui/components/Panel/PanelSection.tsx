@@ -28,11 +28,12 @@ export const PanelSection: React.FC<PanelSectionProps> = ({
                 {showToggle && (
                     <div
                         className={cn(styles.toggle, isActive && styles.active)}
-                        onClick={onToggle}
+                        onClick={(e) => { e.stopPropagation(); onToggle?.(); }}
+                        onMouseDown={(e) => e.stopPropagation()}
                         role="switch"
                         aria-checked={isActive}
                         tabIndex={0}
-                        onKeyDown={(e) => e.key === 'Enter' && onToggle?.()}
+                        onKeyDown={(e) => { e.stopPropagation(); e.key === 'Enter' && onToggle?.(); }}
                     >
                         <div className={styles.toggleKnob} />
                     </div>

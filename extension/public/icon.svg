@@ -1,0 +1,30 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle (Transparent/Dark) -->
+  <rect width="128" height="128" rx="24" fill="#1a1f2e" />
+  
+  <!-- Stylized Brain (Neural Network Style) -->
+  <g stroke="#4a90d9" stroke-width="3" fill="none">
+    <path d="M64 25c-12-8-28-8-40 0s-20 24-16 40c-8 8-12 20-8 32s16 20 28 20c0 12 8 24 20 28s24-4 32-16c8 12 20 20 32 16s20-16 20-28c12 0 24-8 28-20s0-24-8-32c4-16-4-32-16-40s-28-8-40 0" stroke-opacity="0.8" />
+    
+    <!-- Nodes -->
+    <circle cx="44" cy="40" r="2.5" fill="#4a90d9" />
+    <circle cx="84" cy="40" r="2.5" fill="#4a90d9" />
+    <circle cx="34" cy="70" r="2.5" fill="#4a90d9" />
+    <circle cx="94" cy="70" r="2.5" fill="#4a90d9" />
+    <circle cx="64" cy="100" r="2.5" fill="#4a90d9" />
+  </g>
+
+  <!-- Upward Trend Arrow (Vibrant Green) -->
+  <g stroke="#00d4aa" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="35,85 55,65 75,75 100,45" />
+    <polyline points="85,45 100,45 100,60" />
+  </g>
+  
+  <!-- Glow Effect -->
+  <defs>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+</svg>
