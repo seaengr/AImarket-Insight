@@ -10,6 +10,7 @@ export default defineConfig({
             input: {
                 popup: resolve(__dirname, 'index.html'),
                 content: resolve(__dirname, 'content/inject.tsx'),
+                background: resolve(__dirname, 'background/background.ts'),
             },
             output: {
                 entryFileNames: (chunkInfo) => {

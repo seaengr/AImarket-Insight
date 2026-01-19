@@ -139,17 +139,30 @@ class UIStore {
         this.setError(null);
 
         try {
-            const response = await fetch(`${API_URL}/analyze`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ symbol, timeframe, price })
+            // Use background script to proxy the fetch (bypasses Mixed Content)
+            const result: any = await new Promise((resolve, reject) => {
+                chrome.runtime.sendMessage({
+                    type: 'FETCH_ANALYSIS',
+                    payload: {
+                        url: `${API_URL}/analyze`,
+                        options: {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ symbol, timeframe, price })
+                        }
+                    }
+                }, (response) => {
+                    if (chrome.runtime.lastError) {
+                        reject(new Error(chrome.runtime.lastError.message));
+                    } else if (response && response.success) {
+                        resolve(response.data);
+                    } else {
+                        reject(new Error(response?.error || 'Unknown background error'));
+                    }
+                });
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch analysis from backend');
-            }
-
-            const data = await response.json();
+            const data = result;
 
             // Detect if signal changed and trigger alert
             const previousSignal = this.state.analysis.signal.type;
