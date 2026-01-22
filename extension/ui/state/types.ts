@@ -52,6 +52,8 @@ export interface MarketMetadata {
     riskSentiment: 'Risk-On' | 'Risk-Off' | 'Neutral';
     newsSentiment: string;
     newsStrength: string;
+    emaExtension?: number;
+    mirrorPrice?: number;
 }
 
 export interface MarketAnalysis {

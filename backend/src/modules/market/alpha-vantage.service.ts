@@ -131,6 +131,7 @@ export class AlphaVantageService {
             'DXY': 'UUP', // Invesco DB US Dollar Index Trust (Proxy for DXY)
             'SPX': 'SPY', // S&P 500
             'GLD': 'GLD', // Gold
+            'BTC': 'BITO', // ProShares Bitcoin Strategy ETF (Proxy for BTC in Global Quote)
         };
 
         try {

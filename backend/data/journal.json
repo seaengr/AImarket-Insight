@@ -70,5 +70,140 @@
     "price": 4788.935,
     "confidence": 50,
     "outcome": "PENDING"
+  },
+  {
+    "id": "aktupcj84",
+    "timestamp": 1769046065588,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4800.33,
+    "confidence": 85,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "cem49wbyp",
+    "timestamp": 1769047566527,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4792.62,
+    "confidence": 85,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "d1wu2c61d",
+    "timestamp": 1769047592629,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4791.23,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "bzaque2yw",
+    "timestamp": 1769048517607,
+    "symbol": "BTCUSDT",
+    "type": "SELL",
+    "price": 90285.72,
+    "confidence": 100,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "bdq0g0rjl",
+    "timestamp": 1769049551040,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4779.14,
+    "confidence": 95,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "c2nj5h301",
+    "timestamp": 1769049743863,
+    "symbol": "BTCUSDT",
+    "type": "SELL",
+    "price": 90069.76,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "0wf5he79x",
+    "timestamp": 1769050782615,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4791.725,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "h4zr6g6jd",
+    "timestamp": 1769051084592,
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "price": 4785.53,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "wa46008jt",
+    "timestamp": 1769051683151,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4787.91,
+    "confidence": 55,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "bascbh0al",
+    "timestamp": 1769051908941,
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "price": 4789.59,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "6vng523do",
+    "timestamp": 1769052209813,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4790.225,
+    "confidence": 55,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "n0x5t0dxz",
+    "timestamp": 1769052815833,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4792.175,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "14troa85z",
+    "timestamp": 1769054081674,
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "price": 4794.435,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "ww3yu1qvc",
+    "timestamp": 1769054383234,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4796.045,
+    "confidence": 95,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "e9ugt3edr",
+    "timestamp": 1769054987496,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4799.015,
+    "confidence": 65,
+    "outcome": "PENDING"
   }
 ]

@@ -27,6 +27,8 @@ export interface MarketData {
     volatility: string;
     riskSentiment: 'Risk-On' | 'Risk-Off' | 'Neutral';
     correlation: number;
+    emaExtension?: number; // % distance from EMA 21
+    mirrorPrice?: number;  // Price of the inversely correlated asset (XAU vs BTC)
     newsSentiment?: {
         sentiment: string;
         strength: string;
@@ -75,5 +77,7 @@ export interface AnalysisResponse {
         riskSentiment: string;
         newsSentiment: string;
         newsStrength: string;
+        emaExtension?: number;
+        mirrorPrice?: number;
     };
 }

@@ -109,7 +109,45 @@ export const Panel: React.FC<PanelProps> = ({
                             <span className={styles.marketInfoValue}>{analysis.marketInfo.timeframe}</span>
                         </div>
                     </div>
+
+                    {/* Mean Reversion Gauge (Visualizing Overextension) */}
+                    {analysis.metadata?.emaExtension !== undefined && (
+                        <div className={styles.gaugeContainer}>
+                            <div className={styles.gaugeLabel}>
+                                <span>EMA 21 STRETCH</span>
+                                <span>{analysis.metadata.emaExtension.toFixed(2)}%</span>
+                            </div>
+                            <div className={styles.gaugeBar}>
+                                <div
+                                    className={cn(
+                                        styles.gaugeLevel,
+                                        Math.abs(analysis.metadata.emaExtension) > 3 ? styles.riskOff :
+                                            Math.abs(analysis.metadata.emaExtension) > 1.5 ? styles.neutral : styles.riskOn
+                                    )}
+                                    style={{ width: `${Math.min(Math.abs(analysis.metadata.emaExtension) * 20, 100)}%` }}
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
+
+                {/* Mirror Asset Tracker (Divergence Context) */}
+                {analysis.metadata?.mirrorPrice !== undefined && analysis.metadata.correlationValue < 0 && (
+                    <div className={styles.mirrorRow}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <svg className={styles.mirrorIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                            </svg>
+                            <span className={styles.mirrorSymbol}>
+                                {analysis.marketInfo.symbol.includes('BTC') ? 'XAU' : 'BTC'} Mirror
+                            </span>
+                        </div>
+                        <span className={styles.mirrorValue}>
+                            {analysis.metadata.mirrorPrice > 0 ? `+${analysis.metadata.mirrorPrice.toFixed(2)}%` : `${analysis.metadata.mirrorPrice.toFixed(2)}%`}
+                        </span>
+                    </div>
+                )}
 
                 {/* Signal Section */}
                 <div className={styles.section}>
@@ -122,7 +160,7 @@ export const Panel: React.FC<PanelProps> = ({
                     </div>
                 </div>
 
-                {/* Market Context Section (Macro Awareness) */}
+                {/* Strategic Alerts Section */}
                 {analysis.metadata && (
                     <div className={styles.section}>
                         <div className={styles.macroGrid}>
@@ -143,6 +181,19 @@ export const Panel: React.FC<PanelProps> = ({
                                     <span className={styles.macroSubtext}> vs Benchmark</span>
                                 </span>
                             </div>
+                        </div>
+
+                        <div className={styles.strategicAlerts}>
+                            {analysis.metadata.emaExtension && Math.abs(analysis.metadata.emaExtension) > 3 && (
+                                <div className={cn(styles.alertBadge, styles.riskOff)}>
+                                    <span>⚠️ RETRACEMENT RISK: Overextended</span>
+                                </div>
+                            )}
+                            {analysis.metadata.mirrorPrice !== undefined && analysis.metadata.correlationValue < 0 && (
+                                <div className={cn(styles.alertBadge, styles.neutral)} style={{ backgroundColor: 'rgba(98, 0, 234, 0.15)', color: '#b388ff' }}>
+                                    <span>📡 DIVERGENCE: Mirror Mismatch</span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

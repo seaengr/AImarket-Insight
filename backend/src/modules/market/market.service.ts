@@ -65,7 +65,18 @@ export class MarketService {
             correlationValue = benchmarks['SPX'] > 0 ? 0.75 : -0.75;
         }
 
-        // 5. Multi-Timeframe Trend
+        // 5. Advanced Divergence Logic (EMA Extension + Mirror Asset)
+        const ema21 = indicators.ema21;
+        const emaExtension = ((price - ema21) / ema21) * 100;
+
+        let mirrorPrice: number | undefined;
+        if (symbol.includes('BTC') || symbol.includes('ETH')) {
+            mirrorPrice = benchmarks['GLD']; // Mirror for Crypto is Gold
+        } else if (symbol.includes('XAU') || symbol.includes('GLD')) {
+            mirrorPrice = benchmarks['BTC']; // Mirror for Gold is Bitcoin
+        }
+
+        // 6. Multi-Timeframe Trend
         const is5mBullish = indicators.rsi > 55 || price > indicators.ema9;
         const is15mBullish = indicators.rsi > 50 || (price > indicators.ema21 && price > indicators.ema200);
 
@@ -85,6 +96,8 @@ export class MarketService {
             volatility: 'Moderate',
             riskSentiment,
             correlation: correlationValue,
+            emaExtension,
+            mirrorPrice,
             newsSentiment: {
                 sentiment: sentimentResult.sentiment,
                 strength: sentimentResult.strength,

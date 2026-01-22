@@ -9,7 +9,15 @@ export class PromptBuilder {
    static buildExplanationPrompt(data: AnalysisResponse): string {
       const { symbol, timeframe, compareAsset } = data.marketInfo;
       const { type: signal, confidence, breakdown } = data.signal;
-      const { momentum, volatility, correlationValue, riskSentiment, newsSentiment, newsStrength } = data.metadata;
+      const { momentum, volatility, correlationValue, riskSentiment, newsSentiment, newsStrength, emaExtension, mirrorPrice } = data.metadata;
+
+      const divergenceInfo = (mirrorPrice !== undefined && correlationValue < 0)
+         ? `DIVERGENCE CONTEXT: The mirror asset is currently ${mirrorPrice > 0 ? 'Up' : 'Down'}. Since ${symbol} is usually inversely correlated (${correlationValue}), analyze if this move is a leading indicator or a fake-out.`
+         : '';
+
+      const extensionInfo = (emaExtension && Math.abs(emaExtension) > 2)
+         ? `OVEREXTENSION: Price is ${emaExtension.toFixed(2)}% away from EMA 21. Discuss the risk of a mean-reversion retracement.`
+         : '';
 
       // Fetch Historical Context (Reinforcement Learning)
       const stats = journalService.getStats(symbol);
@@ -25,10 +33,14 @@ HISTORICAL PERFORMANCE CONTEXT (Self-Reflection):
 ${perfString}
 ---
 
+${divergenceInfo}
+${extensionInfo}
+
 ASSET: ${symbol} / ${compareAsset} (${timeframe})
 CURRENT SIGNAL: ${signal} (Confidence: ${confidence}%)
 MACRO REGIME: ${riskSentiment}
 CORRELATION: ${correlationValue.toFixed(2)} vs Benchmark
+EMA EXTENSION: ${emaExtension?.toFixed(2)}%
 ---
 
 DISCLAIMER:

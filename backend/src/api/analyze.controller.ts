@@ -55,7 +55,9 @@ export const analyzeController = async (req: Request, res: Response) => {
                 correlationValue: marketData.correlation,
                 riskSentiment: marketData.riskSentiment,
                 newsSentiment: marketData.newsSentiment?.sentiment || 'Neutral',
-                newsStrength: marketData.newsSentiment?.strength || 'Low'
+                newsStrength: marketData.newsSentiment?.strength || 'Low',
+                emaExtension: marketData.emaExtension,
+                mirrorPrice: marketData.mirrorPrice
             }
         };
 
@@ -69,7 +71,15 @@ export const analyzeController = async (req: Request, res: Response) => {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ error: 'Invalid request data', details: error.issues });
         }
-        logger.error(`Analysis failed: ${error.message}`);
+
+        // Handle gracefully if it's a known market error (like 'Price not found')
+        const message = error.message || 'Internal server error';
+        logger.error(`Analysis failed: ${message}`);
+
+        if (message.includes('Unable to fetch price') || message.includes('API key')) {
+            return res.status(422).json({ error: message });
+        }
+
         res.status(500).json({ error: 'Internal server error' });
     }
 };

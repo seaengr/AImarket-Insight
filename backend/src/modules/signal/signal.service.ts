@@ -169,6 +169,28 @@ export class SignalService {
             }
         }
 
+        // --- NEW: EMA Extension & Mirror Divergence (Step 5) ---
+        if (data.emaExtension) {
+            if (data.emaExtension > 3 && baselineScore > 0) {
+                // Penalize buying if overextended
+                reasons.push("Alert: Price is overextended from EMA 21 (>3%). Retracement likely.");
+            } else if (data.emaExtension < -3 && baselineScore < 0) {
+                // Penalize selling if overextended
+                reasons.push("Alert: Price is overextended from EMA 21 (<-3%). Retracement likely.");
+            }
+        }
+
+        if (data.mirrorPrice && data.correlation < 0) {
+            // Check for divergence in mirrored assets (e.g. BTC vs XAU)
+            const isMirrorUp = data.mirrorPrice > 0;
+            const isAssetUp = baselineScore > 0;
+            if (isMirrorUp === isAssetUp) {
+                // Should be moving in opposite directions
+                news -= 15;
+                reasons.push(`Divergence Caution: Asset moving with its inverse mirror. Prediction: Potential reversal or chop.`);
+            }
+        }
+
         // 8. News Breakdown (Fundamental Context)
         if (data.newsSentiment && data.newsSentiment.score !== undefined) {
             const newsScore = data.newsSentiment.score;

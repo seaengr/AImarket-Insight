@@ -9,9 +9,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         const { url, options } = message.payload;
 
         fetch(url, options)
-            .then(response => {
+            .then(async response => {
                 if (!response.ok) {
-                    throw new Error(`Backend error: ${response.statusText}`);
+                    const errorJson = await response.json().catch(() => ({}));
+                    throw new Error(errorJson.error || `Backend error: ${response.statusText}`);
                 }
                 return response.json();
             })
