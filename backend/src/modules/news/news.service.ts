@@ -1,21 +1,24 @@
 import Parser from 'rss-parser';
 import { logger } from '../../shared/logger';
-import { aiService } from '../ai/ai.service';
-import { AnalysisResponse } from '../../types/api.types';
 
 export interface NewsItem {
     title: string;
     link: string;
     pubDate: string;
     content: string;
-    sentiment?: number; // -1 to 1
+    sentiment?: {
+        score: number;
+        label: string;
+    };
 }
 
 export class NewsService {
     private parser: Parser;
+    // Common financial RSS feeds
     private feeds = [
         'https://www.forexfactory.com/news/rss',
-        'https://www.fxstreet.com/rss/news',
+        'https://www.dailyfx.com/feeds/market-alerts',
+        'http://feeds.reuters.com/reuters/businessNews'
     ];
 
     constructor() {
@@ -23,64 +26,50 @@ export class NewsService {
     }
 
     /**
-     * Fetches recent headlines from configured RSS feeds
+     * Fetches latest news headlines related to a symbol or asset class
      */
-    async getRecentHeadlines(symbol: string): Promise<NewsItem[]> {
+    async getHeadlines(symbol: string): Promise<string[]> {
+        logger.info(`Fetching news headlines for ${symbol}...`);
+
         try {
-            logger.info(`Fetching RSS news for ${symbol}`);
-            const allItems: NewsItem[] = [];
+            // In a real app, we might fetch multiple feeds and filter
+            // For MVP, we'll fetch ForexFactory and look for keywords
+            const feed = await this.parser.parseURL(this.feeds[0]);
 
-            for (const url of this.feeds) {
-                const feed = await this.parser.parseURL(url);
-                const filtered = feed.items
-                    .filter(item => {
-                        const content = (item.title + ' ' + (item.contentSnippet || '')).toUpperCase();
-                        return content.includes(symbol.toUpperCase()) ||
-                            content.includes('GOLD') ||
-                            content.includes('MARKET');
-                    })
-                    .slice(0, 5)
-                    .map(item => ({
-                        title: item.title || '',
-                        link: item.link || '',
-                        pubDate: item.pubDate || '',
-                        content: item.contentSnippet || '',
-                    }));
+            // Extract keywords from symbol (e.g., XAUUSD -> [Gold, USD])
+            const keywords = this.getKeywords(symbol);
 
-                allItems.push(...filtered);
+            const headlines = feed.items
+                .filter(item => {
+                    const content = (item.title + ' ' + (item.contentSnippet || '')).toLowerCase();
+                    return keywords.some(k => content.includes(k.toLowerCase()));
+                })
+                .map(item => item.title || '')
+                .slice(0, 5); // Keep top 5 latest relevant headlines
+
+            if (headlines.length === 0) {
+                // Fallback to top general market news if no specific symbol news found
+                return feed.items.slice(0, 3).map(item => item.title || '');
             }
 
-            return allItems.slice(0, 5);
+            return headlines;
         } catch (error: any) {
-            logger.error(`News fetch failed: ${error.message}`);
+            logger.error(`Failed to fetch news: ${error.message}`);
             return [];
         }
     }
 
-    /**
-     * Analyzes sentiment of headlines using the local AI
-     */
-    async analyzeSentiment(headlines: NewsItem[]): Promise<{ score: number; sentiment: string }> {
-        if (headlines.length === 0) return { score: 0, sentiment: 'Neutral' };
+    private getKeywords(symbol: string): string[] {
+        const keywords = [symbol];
 
-        const textToAnalyze = headlines.map(h => h.title).join('\n');
+        if (symbol.includes('USD')) keywords.push('Dollar', 'Fed', 'United States');
+        if (symbol.includes('XAU')) keywords.push('Gold', 'Bullion');
+        if (symbol.includes('BTC') || symbol.includes('ETH')) keywords.push('Crypto', 'Bitcoin', 'Ethereum');
+        if (symbol.includes('JPY')) keywords.push('Yen', 'BoJ');
+        if (symbol.includes('EUR')) keywords.push('Euro', 'ECB');
+        if (symbol.includes('GBP')) keywords.push('Pound', 'BoE');
 
-        // This is a simplified integration. 
-        // We will eventually update AIService to handle raw sentiment prompts.
-        logger.info('Analyzing news sentiment via AI...');
-
-        // Mock sentiment for now until AI prompt is updated
-        // In the next step, I will update PromptBuilder to handle this.
-        let score = 0;
-        const textLower = textToAnalyze.toLowerCase();
-
-        if (textLower.includes('bullish') || textLower.includes('soar') || textLower.includes('gain')) score += 0.5;
-        if (textLower.includes('bearish') || textLower.includes('plummet') || textLower.includes('loss')) score -= 0.5;
-
-        return {
-            score: Math.max(-1, Math.min(1, score)),
-            sentiment: score > 0 ? 'Positive' : (score < 0 ? 'Negative' : 'Neutral')
-        };
+        return keywords;
     }
 }
 

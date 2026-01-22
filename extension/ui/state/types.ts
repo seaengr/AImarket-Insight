@@ -45,11 +45,21 @@ export interface TradeLevels {
 }
 
 // Complete market analysis (future AI integration point)
+export interface MarketMetadata {
+    momentum: string;
+    volatility: string;
+    correlationValue: number;
+    riskSentiment: 'Risk-On' | 'Risk-Off' | 'Neutral';
+    newsSentiment: string;
+    newsStrength: string;
+}
+
 export interface MarketAnalysis {
     marketInfo: MarketInfo;
     signal: Signal;
     levels: TradeLevels;
     explanation: string[];
+    metadata?: MarketMetadata;
     timestamp?: number;
 }
 

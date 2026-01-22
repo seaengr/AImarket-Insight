@@ -73,4 +73,12 @@ export const MOCK_DATA = {
     'Volume increase confirms buyer interest',
     'RSI showing bullish divergence',
   ],
+  metadata: {
+    momentum: 'Strong Bullish',
+    volatility: 'Moderate',
+    correlationValue: 0.85,
+    riskSentiment: 'Risk-On',
+    newsSentiment: 'Positive',
+    newsStrength: 'High'
+  }
 } as const;

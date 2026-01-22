@@ -1,4 +1,5 @@
 import { AnalysisResponse } from '../../types/api.types';
+import { journalService } from '../journal/journal.service';
 
 export class PromptBuilder {
    /**
@@ -6,19 +7,32 @@ export class PromptBuilder {
     * that teaches the AI the EMA 21/200 strategy.
     */
    static buildExplanationPrompt(data: AnalysisResponse): string {
-      const { marketInfo, signal, metadata } = data;
+      const { symbol, timeframe, compareAsset } = data.marketInfo;
+      const { type: signal, confidence, breakdown } = data.signal;
+      const { momentum, volatility, correlationValue, riskSentiment, newsSentiment, newsStrength } = data.metadata;
+
+      // Fetch Historical Context (Reinforcement Learning)
+      const stats = journalService.getStats(symbol);
+      const perfString = stats.totalTrades > 0
+         ? `AI SYSTEM HISTORY for ${symbol}: ${stats.winRate}% win rate across ${stats.totalTrades} past signals.`
+         : `AI SYSTEM HISTORY: No previous signals recorded for ${symbol} yet. Analyze based purely on current data.`;
 
       return `
-You are a market analysis assistant that specializes in the EMA 21/200 Crossover Strategy.
+You are a senior professional trading assistant. Explain this trade logic to the user.
+
+---
+HISTORICAL PERFORMANCE CONTEXT (Self-Reflection):
+${perfString}
+---
+
+ASSET: ${symbol} / ${compareAsset} (${timeframe})
+CURRENT SIGNAL: ${signal} (Confidence: ${confidence}%)
+MACRO REGIME: ${riskSentiment}
+CORRELATION: ${correlationValue.toFixed(2)} vs Benchmark
+---
 
 DISCLAIMER:
 You do NOT provide financial advice.
-You do NOT predict future prices.
-You do NOT generate, modify, or suggest trading signals.
-You do NOT invent information.
-
-Your role is to EXPLAIN the provided market analysis strictly based on the given data and the strategy rules below.
-
 ---
 STRATEGY RULES (EMA 21 & 200):
 
@@ -55,29 +69,22 @@ OUTPUT RULES:
 ---
 ANALYSIS DATA:
 
-Symbol: ${marketInfo.symbol}
-Signal: ${signal.type}
+Symbol: ${symbol}
+Signal: ${signal}
 
-Multi-Timeframe Trend:
-- 5m: (Micro-Trend)
-- 15m: (Micro-Trend)
-- 1H: Bullish/Bearish
-- 4H: Bullish/Bearish
-- 1D: Bullish/Bearish
+Momentum: ${momentum}
+Volatility: ${volatility}
+Correlation with ${compareAsset}: ${correlationValue.toFixed(2)}
 
-Momentum: ${metadata.momentum}
-Volatility: ${metadata.volatility}
-Correlation with ${marketInfo.compareAsset}: ${metadata.correlationValue}
+News Sentiment: ${newsSentiment} (${newsStrength})
 
-News Sentiment: ${metadata.newsSentiment} (${metadata.newsStrength})
-
-Confidence Score: ${signal.confidence}
+Confidence Score: ${confidence}%
 Confidence Breakdown:
-- Trend alignment: ${signal.breakdown.trend}
-- Correlation: ${signal.breakdown.correlation}
-- Momentum: ${signal.breakdown.momentum}
-- Volatility: ${signal.breakdown.volatility}
-- News: ${signal.breakdown.news}
+- Trend Factor: ${breakdown.trend}/100
+- Correlation Factor: ${breakdown.correlation}
+- Momentum Factor: ${breakdown.momentum}
+- Volatility Factor: ${breakdown.volatility}
+- News Factor: ${breakdown.news}
 `.trim();
    }
 }

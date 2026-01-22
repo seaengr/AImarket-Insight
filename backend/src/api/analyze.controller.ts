@@ -14,6 +14,8 @@ const AnalysisSchema = z.object({
     includeAi: z.boolean().default(true)
 });
 
+import { journalService } from '../modules/journal/journal.service';
+
 export const analyzeController = async (req: Request, res: Response) => {
     try {
         const { symbol, compareSymbol, timeframe, price, includeAi } = AnalysisSchema.parse(req.body);
@@ -27,7 +29,12 @@ export const analyzeController = async (req: Request, res: Response) => {
         const signalResult = signalService.generateSignal(marketData, correlation);
         const levels = signalService.calculateLevels(marketData.price, signalResult.type);
 
-        // 3. Construct Initial Response (needed for AI)
+        // 3. Log Signal to Journal (Reinforcement Learning)
+        if (signalResult.type !== 'HOLD') {
+            await journalService.logSignal(symbol, signalResult.type, marketData.price, signalResult.confidence);
+        }
+
+        // 4. Construct Initial Response (needed for AI)
         const analysisResponse: AnalysisResponse = {
             marketInfo: {
                 symbol,
@@ -45,7 +52,8 @@ export const analyzeController = async (req: Request, res: Response) => {
             metadata: {
                 momentum: marketData.momentum,
                 volatility: marketData.volatility,
-                correlationValue: correlation,
+                correlationValue: marketData.correlation,
+                riskSentiment: marketData.riskSentiment,
                 newsSentiment: marketData.newsSentiment?.sentiment || 'Neutral',
                 newsStrength: marketData.newsSentiment?.strength || 'Low'
             }

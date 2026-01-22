@@ -82,6 +82,66 @@ export class AIService {
         }
     }
 
+    /**
+     * Analyzes news sentiment for a list of headlines.
+     * Returns a score from -100 to +100 and a label.
+     */
+    async analyzeSentiment(symbol: string, headlines: string[]): Promise<{ score: number; sentiment: string; strength: string }> {
+        if (headlines.length === 0 || config.ai.provider === 'mock') {
+            return { score: 0, sentiment: 'Neutral', strength: 'Low' };
+        }
+
+        try {
+            logger.info(`Analyzing sentiment for ${symbol} headlines...`);
+
+            const prompt = `
+            Analyze the following financial news headlines for the asset ${symbol}.
+            Headlines:
+            ${headlines.map((h, i) => `${i + 1}. ${h}`).join('\n')}
+
+            Rate the overall sentiment from -100 (Extremely Bearish) to +100 (Extremely Bullish).
+            Provide your response ONLY in this JSON format:
+            {
+                "score": number,
+                "sentiment": "Bullish" | "Bearish" | "Neutral",
+                "strength": "High" | "Moderate" | "Low"
+            }
+            `.trim();
+
+            let text = '';
+
+            if (config.ai.provider === 'gemini' || config.ai.geminiApiKey) {
+                const genAI = new GoogleGenerativeAI(config.ai.geminiApiKey);
+                const model = genAI.getGenerativeModel({ model: config.ai.model || "gemini-1.5-flash" });
+                const result = await model.generateContent(prompt);
+                text = (await result.response).text();
+            } else if (config.ai.provider === 'ollama') {
+                const response = await axios.post(config.ai.ollamaUrl, {
+                    model: config.ai.model,
+                    prompt: prompt,
+                    stream: false,
+                });
+                text = response.data.response || '';
+            }
+
+            // Extract JSON from response
+            const jsonMatch = text.match(/\{.*\}/s);
+            if (jsonMatch) {
+                const result = JSON.parse(jsonMatch[0]);
+                return {
+                    score: result.score || 0,
+                    sentiment: result.sentiment || 'Neutral',
+                    strength: result.strength || 'Low'
+                };
+            }
+
+            return { score: 0, sentiment: 'Neutral', strength: 'Low' };
+        } catch (error: any) {
+            logger.error(`Sentiment analysis failed: ${error.message}`);
+            return { score: 0, sentiment: 'Neutral', strength: 'Low' };
+        }
+    }
+
     private formatBullets(text: string): string[] {
         // Split by newlines and filter for bullets
         return text.split('\n')

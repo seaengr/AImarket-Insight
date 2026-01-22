@@ -25,9 +25,12 @@ export interface MarketData {
     };
     momentum: string;
     volatility: string;
+    riskSentiment: 'Risk-On' | 'Risk-Off' | 'Neutral';
+    correlation: number;
     newsSentiment?: {
         sentiment: string;
         strength: string;
+        score?: number;
     };
 }
 
@@ -69,6 +72,7 @@ export interface AnalysisResponse {
         momentum: string;
         volatility: string;
         correlationValue: number;
+        riskSentiment: string;
         newsSentiment: string;
         newsStrength: string;
     };

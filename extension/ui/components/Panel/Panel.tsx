@@ -95,8 +95,14 @@ export const Panel: React.FC<PanelProps> = ({
                             <span className={styles.marketInfoValue}>{analysis.marketInfo.symbol}</span>
                         </div>
                         <div className={styles.marketInfoItem}>
-                            <span className={styles.marketInfoLabel}>Compare</span>
-                            <span className={styles.marketInfoValue}>{analysis.marketInfo.compareAsset}</span>
+                            <span className={styles.marketInfoLabel}>Price</span>
+                            <span className={cn(
+                                styles.marketInfoValue,
+                                analysis.signal.type === 'BUY' && styles.bullishPrice,
+                                analysis.signal.type === 'SELL' && styles.bearishPrice
+                            )}>
+                                {analysis.levels.stopLoss > 0 ? analysis.levels.entryZone.low.toFixed(2) : (state.analysis.marketInfo.symbol.includes('BTC') ? '...' : analysis.levels.entryZone.low || 'Loading')}
+                            </span>
                         </div>
                         <div className={styles.marketInfoItem}>
                             <span className={styles.marketInfoLabel}>Timeframe</span>
@@ -116,42 +122,72 @@ export const Panel: React.FC<PanelProps> = ({
                     </div>
                 </div>
 
-                {/* Entry Zone Section */}
-                <PanelSection
-                    title="Entry Zone"
-                    showToggle
-                    isActive={panel.visibility.entryZone}
-                    onToggle={() => onToggleSection('entryZone')}
-                >
-                    <EntryZone
-                        low={analysis.levels.entryZone.low}
-                        high={analysis.levels.entryZone.high}
-                    />
-                </PanelSection>
+                {/* Market Context Section (Macro Awareness) */}
+                {analysis.metadata && (
+                    <div className={styles.section}>
+                        <div className={styles.macroGrid}>
+                            <div className={styles.macroItem}>
+                                <span className={styles.marketInfoLabel}>Macro Regime</span>
+                                <div className={cn(
+                                    styles.macroBadge,
+                                    analysis.metadata.riskSentiment === 'Risk-On' && styles.riskOn,
+                                    analysis.metadata.riskSentiment === 'Risk-Off' && styles.riskOff
+                                )}>
+                                    {analysis.metadata.riskSentiment}
+                                </div>
+                            </div>
+                            <div className={styles.macroItem}>
+                                <span className={styles.marketInfoLabel}>Correlation</span>
+                                <span className={styles.macroValue}>
+                                    {(analysis.metadata.correlationValue * 100).toFixed(0)}%
+                                    <span className={styles.macroSubtext}> vs Benchmark</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
-                {/* Take Profit Section */}
-                <PanelSection
-                    title="Take Profit"
-                    showToggle
-                    isActive={panel.visibility.takeProfit}
-                    onToggle={() => onToggleSection('takeProfit')}
-                >
-                    <TakeProfit
-                        tp1={analysis.levels.takeProfit.tp1}
-                        tp2={analysis.levels.takeProfit.tp2}
-                        tp3={analysis.levels.takeProfit.tp3}
-                    />
-                </PanelSection>
+                {/* Trade Levels Section (Only visible for BUY/SELL) */}
+                {analysis.signal.type !== 'HOLD' && (
+                    <>
+                        {/* Entry Zone Section */}
+                        <PanelSection
+                            title="Entry Zone"
+                            showToggle
+                            isActive={panel.visibility.entryZone}
+                            onToggle={() => onToggleSection('entryZone')}
+                        >
+                            <EntryZone
+                                low={analysis.levels.entryZone.low}
+                                high={analysis.levels.entryZone.high}
+                            />
+                        </PanelSection>
 
-                {/* Stop Loss Section */}
-                <PanelSection
-                    title="Stop Loss"
-                    showToggle
-                    isActive={panel.visibility.stopLoss}
-                    onToggle={() => onToggleSection('stopLoss')}
-                >
-                    <StopLoss value={analysis.levels.stopLoss} />
-                </PanelSection>
+                        {/* Take Profit Section */}
+                        <PanelSection
+                            title="Take Profit"
+                            showToggle
+                            isActive={panel.visibility.takeProfit}
+                            onToggle={() => onToggleSection('takeProfit')}
+                        >
+                            <TakeProfit
+                                tp1={analysis.levels.takeProfit.tp1}
+                                tp2={analysis.levels.takeProfit.tp2}
+                                tp3={analysis.levels.takeProfit.tp3}
+                            />
+                        </PanelSection>
+
+                        {/* Stop Loss Section */}
+                        <PanelSection
+                            title="Stop Loss"
+                            showToggle
+                            isActive={panel.visibility.stopLoss}
+                            onToggle={() => onToggleSection('stopLoss')}
+                        >
+                            <StopLoss value={analysis.levels.stopLoss} />
+                        </PanelSection>
+                    </>
+                )}
 
                 {/* Explanation Section */}
                 <button className={styles.expandButton} onClick={onToggleExplanation}>

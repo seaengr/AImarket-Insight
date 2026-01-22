@@ -135,6 +135,17 @@ class UIStore {
 
     // Analysis updates (Integrated with Backend)
     async fetchAnalysis(symbol: string, timeframe: string, price: number | null = null): Promise<void> {
+        // Clear old analysis if symbol changed to prevent "phantom" signals
+        if (this.state.analysis.marketInfo.symbol !== symbol) {
+            this.updateAnalysis({
+                marketInfo: { symbol, timeframe: timeframe as any, compareAsset: symbol },
+                signal: { type: 'HOLD', confidence: 0 },
+                levels: { entryZone: { low: 0, high: 0 }, takeProfit: { tp1: 0, tp2: 0, tp3: 0 }, stopLoss: 0 },
+                explanation: ['Analyzing new market data...'],
+                metadata: undefined
+            });
+        }
+
         this.setLoading(true);
         this.setError(null);
 

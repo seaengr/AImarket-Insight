@@ -1,5 +1,6 @@
 import { MarketData, SignalType, ConfidenceBreakdown } from '../../types/api.types';
 import { logger } from '../../shared/logger';
+import { journalService } from '../journal/journal.service';
 
 export interface SignalResult {
     type: SignalType;
@@ -14,6 +15,11 @@ export class SignalService {
      */
     generateSignal(data: MarketData, correlation: number): SignalResult {
         logger.info(`Generating signal for ${data.symbol}`);
+
+        // 0. Get Historical Learning Stats (Reinforcement Learning)
+        const stats = journalService.getStats(data.symbol);
+        const winRate = stats.winRate;
+        const totalTrades = stats.totalTrades;
 
         const { rsi } = data.indicators;
         const { ema9, ema21, ema200 } = data.indicators;
@@ -122,13 +128,7 @@ export class SignalService {
             reasons.push('Mixed Signals across timeframes (Caution)');
         }
 
-        // Correlation Breakdown
-        if (correlation > 0.8) {
-            corr = 20;
-            reasons.push('High positive correlation with benchmark asset');
-        }
-
-        // Momentum Breakdown (Day Trading Tuning: 35/65)
+        // 4. Momentum Breakdown (Day Trading Tuning: 35/65)
         if (rsi < 35) {
             momentum = 25;
             reasons.push('RSI is Oversold (<35) - Bullish Momentum');
@@ -137,20 +137,70 @@ export class SignalService {
             reasons.push('RSI is Overbought (>65) - Bearish Pressure');
         }
 
-        // Volatility Breakdown
+        // 5. Volatility Breakdown
         if (data.volatility === 'Moderate') {
             volatility = 10;
             reasons.push('Current volatility is within stable ranges');
         }
 
-        // News Breakdown
-        if (data.newsSentiment?.sentiment === 'Positive') {
-            news = 15;
-            reasons.push('Market sentiment is positive based on recent news');
+        // Calculate a Baseline Score for Macro Realignment
+        const baselineScore = trend + mtfScore + pineScript + momentum + volatility;
+
+        // 6. Correlation Breakdown (Inter-market Accuracy)
+        if (Math.abs(data.correlation) > 0.8) {
+            corr = 15;
+            reasons.push(`High correlation (${data.correlation > 0 ? 'Positive' : 'Inverse'}) with benchmark asset confirmed`);
+        } else if (Math.abs(data.correlation) < 0.3) {
+            corr = -5;
+            reasons.push('Warning: Asset is decoupling from its usual benchmark');
         }
 
-        const totalScore = trend + mtfScore + corr + momentum + volatility + news + pineScript;
-        const finalConfidence = Math.abs(totalScore);
+        // 7. Macro Context (Risk Sentiment)
+        if (data.riskSentiment !== 'Neutral') {
+            const isRiskAsset = data.symbol.includes('BTC') || data.symbol.includes('ETH') || data.symbol.includes('SPX');
+            const isSafeHaven = data.symbol.includes('XAU') || data.symbol.includes('JPY');
+
+            if (data.riskSentiment === 'Risk-On' && (isRiskAsset || baselineScore < 0 && isSafeHaven)) {
+                news += 10;
+                reasons.push('Macro Alignment: Current Risk-On sentiment supports this move');
+            } else if (data.riskSentiment === 'Risk-Off' && (isSafeHaven || baselineScore < 0 && isRiskAsset)) {
+                news += 10;
+                reasons.push('Macro Alignment: Current Risk-Off sentiment supports this move');
+            }
+        }
+
+        // 8. News Breakdown (Fundamental Context)
+        if (data.newsSentiment && data.newsSentiment.score !== undefined) {
+            const newsScore = data.newsSentiment.score;
+            news += Math.round(newsScore * 0.2); // Add to existing macro adjustment
+
+            if (Math.abs(newsScore) > 30) {
+                reasons.push(`AI News Sentiment: ${data.newsSentiment.sentiment} (${data.newsSentiment.strength})`);
+            }
+
+            if (Math.abs(newsScore) > 70) {
+                reasons.push(`WARNING: High impact news detected (${data.newsSentiment.sentiment})`);
+            }
+        }
+
+        const totalScore = baselineScore + corr + news;
+
+        // --- REINFORCEMENT LEARNING ADJUSTMENT ---
+        let finalConfidence = Math.abs(totalScore);
+
+        // If we have enough data (at least 5 trades), adjust confidence
+        if (totalTrades >= 5) {
+            // If win rate is high (>65%), boost confidence slightly
+            if (winRate > 65) {
+                finalConfidence *= 1.1;
+                reasons.push(`AI Feedback: High accuracy on ${data.symbol} (${winRate}%). Confidence boosted.`);
+            }
+            // If win rate is low (<45%), penalize confidence
+            else if (winRate < 45) {
+                finalConfidence *= 0.8;
+                reasons.push(`AI Feedback: Low accuracy on ${data.symbol} recently (${winRate}%). Proceed with caution.`);
+            }
+        }
 
         let type: SignalType = 'HOLD';
         if (totalScore >= 50) type = 'BUY';
@@ -158,7 +208,7 @@ export class SignalService {
 
         return {
             type,
-            confidence: Math.min(finalConfidence, 100),
+            confidence: Math.min(Math.round(finalConfidence), 100),
             breakdown: {
                 trend: Math.abs(trend + mtfScore),
                 correlation: Math.abs(corr),
@@ -171,6 +221,14 @@ export class SignalService {
     }
 
     calculateLevels(price: number, type: SignalType) {
+        if (type === 'HOLD') {
+            return {
+                entryZone: { low: 0, high: 0 },
+                takeProfit: { tp1: 0, tp2: 0, tp3: 0 },
+                stopLoss: 0
+            };
+        }
+
         // --- Day Trading & Scalping Profile (0.5% Volatility) ---
         const atr = price * 0.005;
 
