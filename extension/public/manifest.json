@@ -31,16 +31,16 @@
     }
   ],
   "icons": {
-    "16": "icon-128.png",
-    "48": "icon-128.png",
-    "128": "icon-128.png"
+    "16": "imgicon128.png",
+    "48": "imgicon128.png",
+    "128": "imgicon128.png"
   },
   "action": {
     "default_popup": "index.html",
     "default_icon": {
-      "16": "icon-128.png",
-      "48": "icon-128.png",
-      "128": "icon-128.png"
+      "16": "imgicon128.png",
+      "48": "imgicon128.png",
+      "128": "imgicon128.png"
     }
   }
 }
