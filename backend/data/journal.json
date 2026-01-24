@@ -547,5 +547,185 @@
     "price": 89626.71,
     "confidence": 50,
     "outcome": "PENDING"
+  },
+  {
+    "id": "498725dx1",
+    "timestamp": 1769251599589,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89602.24,
+    "confidence": 90,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "u3x5hheig",
+    "timestamp": 1769252510216,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89617.79,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "ysg45cqqw",
+    "timestamp": 1769255110975,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89654.25,
+    "confidence": 75,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "eck8f8q0o",
+    "timestamp": 1769255716553,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89605.16,
+    "confidence": 65,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "5m48iz8j5",
+    "timestamp": 1769256014235,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89595.41,
+    "confidence": 75,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "ic2cqmfh5",
+    "timestamp": 1769257525875,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89560.39,
+    "confidence": 85,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "w3nxn0eqc",
+    "timestamp": 1769257826620,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89549.98,
+    "confidence": 85,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "j5zhrr86k",
+    "timestamp": 1769258129308,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89528,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "hxrrb6ufz",
+    "timestamp": 1769259940310,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89537.81,
+    "confidence": 100,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "k95x0j6e0",
+    "timestamp": 1769260242731,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89527.25,
+    "confidence": 60,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "8l9xgz2m1",
+    "timestamp": 1769260844213,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89535.05,
+    "confidence": 75,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "061j9xbsv",
+    "timestamp": 1769262064123,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89536.76,
+    "confidence": 85,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "sovjlzm18",
+    "timestamp": 1769262668681,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89536.77,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "az2dgnl51",
+    "timestamp": 1769262970278,
+    "symbol": "BTCUSDT",
+    "type": "SELL",
+    "price": 89536.77,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "6f29oumd2",
+    "timestamp": 1769262997829,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89536.76,
+    "confidence": 60,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "gybr95wcj",
+    "timestamp": 1769263603496,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89431.87,
+    "confidence": 60,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "mgr2atem9",
+    "timestamp": 1769263908071,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89416.14,
+    "confidence": 60,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "vcj5zxjpn",
+    "timestamp": 1769264814976,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89472.83,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "4bvxlkyjl",
+    "timestamp": 1769265429619,
+    "symbol": "BTCUSDT",
+    "type": "BUY",
+    "price": 89512.05,
+    "confidence": 65,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "n9cp37m1l",
+    "timestamp": 1769265729736,
+    "symbol": "BTCUSDT",
+    "type": "SELL",
+    "price": 89507.76,
+    "confidence": 55,
+    "outcome": "PENDING"
   }
 ]
