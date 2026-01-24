@@ -23,7 +23,14 @@ export const PanelHeader: React.FC<PanelHeaderProps> = ({
 }) => {
     return (
         <div className={styles.header} onMouseDown={onDragStart}>
-            <h2 className={styles.title}>{title}</h2>
+            <div className={styles.titleContainer}>
+                <img
+                    src={typeof chrome !== 'undefined' && chrome.runtime?.getURL ? chrome.runtime.getURL('imgicon128.png') : '/imgicon128.png'}
+                    alt="AI"
+                    className={styles.headerLogo}
+                />
+                <h2 className={styles.title}>{title}</h2>
+            </div>
             <div className={styles.headerActions}>
                 <button
                     className={styles.iconButton}

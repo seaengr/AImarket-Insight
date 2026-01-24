@@ -45,13 +45,12 @@ export const Panel: React.FC<PanelProps> = ({
                 onClick={onMinimize}
                 data-drag-handle="true"
             >
-                <svg className={styles.minimizedIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    {/* Brain outline */}
-                    <path d="M12 4.5c-1.5-1-3.5-1-5 0s-2.5 3-2 5c-1 1-1.5 2.5-1 4s2 2.5 3.5 2.5c0 1.5 1 3 2.5 3.5s3-.5 4-2c1 1.5 2.5 2.5 4 2s2.5-2 2.5-3.5c1.5 0 3-1 3.5-2.5s0-3-1-4c.5-2-.5-4-2-5s-3.5-1-5 0" strokeLinecap="round" />
-                    {/* Upward trend arrow */}
-                    <path d="M7 15l4-4 2 2 4-5" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" stroke="#00d4aa" />
-                    <path d="M14 8h3v3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" stroke="#00d4aa" />
-                </svg>
+                <img
+                    src={typeof chrome !== 'undefined' && chrome.runtime?.getURL ? chrome.runtime.getURL('imgicon128.png') : '/imgicon128.png'}
+                    alt="Logo"
+                    className={styles.minimizedIcon}
+                    style={{ borderRadius: '50%' }}
+                />
             </div>
         );
     }

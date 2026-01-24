@@ -42,5 +42,15 @@
       "48": "imgicon128.png",
       "128": "imgicon128.png"
     }
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "imgicon128.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
 }
