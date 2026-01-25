@@ -14,12 +14,14 @@
   ],
   "host_permissions": [
     "*://*.tradingview.com/*",
+    "*://*.exness.com/*",
     "http://localhost:3000/*"
   ],
   "content_scripts": [
     {
       "matches": [
-        "*://*.tradingview.com/*"
+        "*://*.tradingview.com/*",
+        "*://*.exness.com/*"
       ],
       "js": [
         "content/inject.js"

@@ -14,11 +14,25 @@ export interface ScrapedData {
  */
 export function scrapeTradingViewData(): ScrapedData | null {
     try {
-        // --- 1. Find Symbol (Fast Strategy) ---
+        const url = window.location.href;
+        const isExness = url.includes('exness.com');
+
+        // --- 1. Find Symbol ---
         let symbolText = '';
-        const symbolButton = document.querySelector('#header-toolbar-symbol-search');
-        if (symbolButton) {
-            symbolText = symbolButton.textContent?.split('—')[0].trim() || '';
+
+        if (isExness) {
+            // Exness specific symbol detection (Terminal + WebTrading)
+            const exnessSymbol = document.querySelector(
+                '[class*="symbolName-"], [class*="symbolText-"], [class*="active-"] [class*="symbolText-"], .v-terminal-header-symbol, [data-testid*="active-symbol"]'
+            );
+            symbolText = exnessSymbol?.textContent?.trim() || '';
+        }
+
+        if (!symbolText) {
+            const symbolButton = document.querySelector('#header-toolbar-symbol-search');
+            if (symbolButton) {
+                symbolText = symbolButton.textContent?.split('—')[0].trim() || '';
+            }
         }
 
         if (!symbolText) {
@@ -32,28 +46,39 @@ export function scrapeTradingViewData(): ScrapedData | null {
 
         // --- 2. Find Timeframe ---
         let intervalText = '';
-        const intervalButton = document.querySelector('#header-toolbar-intervals');
+        const intervalButton = document.querySelector('#header-toolbar-intervals, [class*="interval-"], .v-terminal-header-interval, [class*="active-"] [class*="timeframe-"]');
         if (intervalButton) {
             intervalText = intervalButton.textContent?.trim() || '';
         }
 
-        // --- 3. Find Price (SMART & FAST STRATEGY) ---
+        // --- 3. Find Price ---
         let priceValue: number | null = null;
 
-        // Step A: Check Page Title (Very fast, no DOM traversal)
-        const titleMatch = document.title.match(/([0-9,.]+)\s*[—\- ]/);
-        if (titleMatch && titleMatch[1]) {
-            const parsed = parseFloat(titleMatch[1].replace(/,/g, ''));
-            if (!isNaN(parsed) && parsed > 0.1) priceValue = parsed;
+        // Step A: Exness Specific Price check (Terminal + WebTrading)
+        if (isExness) {
+            const exnessPrice = document.querySelector(
+                '[class*="currentPrice-"], [class*="lastPrice-"], [class*="bidValue-"], [class*="askValue-"], .v-terminal-price, [data-testid*="price"]'
+            );
+            if (exnessPrice) {
+                const parsed = parseFloat(exnessPrice.textContent?.replace(/,/g, '') || '');
+                if (!isNaN(parsed) && parsed > 0.1) priceValue = parsed;
+            }
         }
 
-        // Step B: Target active legend price (Specific selectors only)
+        // Step B: Check Page Title
         if (priceValue === null) {
-            // Find the legend item for the active series
-            const activeLegend = document.querySelector('[data-name="legend-series-item"], .chart-markup-table');
+            const titleMatch = document.title.match(/([0-9,.]+)\s*[—\- ]/);
+            if (titleMatch && titleMatch[1]) {
+                const parsed = parseFloat(titleMatch[1].replace(/,/g, ''));
+                if (!isNaN(parsed) && parsed > 0.1) priceValue = parsed;
+            }
+        }
+
+        // Step C: Target active legend price
+        if (priceValue === null) {
+            const activeLegend = document.querySelector('[data-name="legend-series-item"], .chart-markup-table, [class*="legend-"]');
             if (activeLegend) {
-                // Focus ONLY on elements likely to contain the price
-                const priceElements = activeLegend.querySelectorAll('div[class*="value-"], span[class*="value-"], [class*="last-"]');
+                const priceElements = activeLegend.querySelectorAll('div[class*="value-"], span[class*="value-"], [class*="last-"], [class*="price-"]');
                 for (const el of Array.from(priceElements)) {
                     const text = el.textContent?.trim() || '';
                     if (/^[0-9,.]+$/.test(text) && text.length > 2) {
@@ -67,9 +92,9 @@ export function scrapeTradingViewData(): ScrapedData | null {
             }
         }
 
-        // Step C: Fallback to the y-axis (Last price label)
+        // Step D: Fallback to the y-axis
         if (priceValue === null) {
-            const axisPrice = document.querySelector('[class*="priceAxis-"] [class*="last-value-"]');
+            const axisPrice = document.querySelector('[class*="priceAxis-"] [class*="last-value-"], .v-terminal-axis-price');
             if (axisPrice) {
                 priceValue = parseFloat(axisPrice.textContent?.replace(/,/g, '') || '');
             }

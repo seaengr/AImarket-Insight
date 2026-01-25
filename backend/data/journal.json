@@ -727,5 +727,23 @@
     "price": 89507.76,
     "confidence": 55,
     "outcome": "PENDING"
+  },
+  {
+    "id": "bqgjsfjid",
+    "timestamp": 1769309126022,
+    "symbol": "BTCUSDT",
+    "type": "SELL",
+    "price": 89145.4,
+    "confidence": 85,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "q47r71yig",
+    "timestamp": 1769311315406,
+    "symbol": "BTCUSDT",
+    "type": "SELL",
+    "price": 89081.7,
+    "confidence": 75,
+    "outcome": "PENDING"
   }
 ]

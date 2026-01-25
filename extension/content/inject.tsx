@@ -12,15 +12,21 @@ import { EXTENSION_ID } from '../shared/constants';
 const INJECTION_ID = `${EXTENSION_ID}-root`;
 
 /**
- * Check if we're on a TradingView chart page
+ * Check if we're on a supported chart page (TradingView or Exness)
  */
-function isTradingViewChart(): boolean {
+function isSupportedChart(): boolean {
     const url = window.location.href;
-    return url.includes('tradingview.com') && (
+    const isTradingView = url.includes('tradingview.com') && (
         url.includes('/chart') ||
         url.includes('/symbols') ||
         document.querySelector('.chart-container') !== null
     );
+    const isExness = url.includes('exness.com') && (
+        url.includes('terminal') ||
+        url.includes('webtrading') ||
+        document.querySelector('[class*="terminal-"], [class*="chart-"], .v-terminal') !== null
+    );
+    return isTradingView || isExness;
 }
 
 /**
@@ -31,7 +37,8 @@ function waitForChartContainer(timeout: number = 10000): Promise<Element | null>
         const startTime = Date.now();
 
         const check = () => {
-            const container = document.querySelector('.chart-container, .chart-page');
+            // Check for TradingView or Exness specific containers
+            const container = document.querySelector('.chart-container, .chart-page, [class*="terminal-"], .v-terminal');
             if (container) {
                 resolve(container);
                 return;
@@ -60,9 +67,9 @@ async function injectApp(): Promise<void> {
         return;
     }
 
-    // Check if on chart page
-    if (!isTradingViewChart()) {
-        console.log('[AI Market Insight] Not a chart page, skipping');
+    // Check if on supported chart page
+    if (!isSupportedChart()) {
+        console.log('[AI Market Insight] Not a supported chart page, skipping');
         return;
     }
 
@@ -91,7 +98,7 @@ async function injectApp(): Promise<void> {
     const root = createRoot(container);
     root.render(
         <React.StrictMode>
-        <TradingViewOverlay />
+            <TradingViewOverlay />
         </React.StrictMode>
     );
 
