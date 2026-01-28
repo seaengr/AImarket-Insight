@@ -207,6 +207,7 @@ export class SignalService {
 
         const totalScore = baselineScore + corr + news;
 
+
         // --- REINFORCEMENT LEARNING ADJUSTMENT ---
         let finalConfidence = Math.abs(totalScore);
 
@@ -225,8 +226,40 @@ export class SignalService {
         }
 
         let type: SignalType = 'HOLD';
-        if (totalScore >= 50) type = 'BUY';
-        if (totalScore <= -50) type = 'SELL';
+
+        // --- STRICT TREND FILTER & REVERSAL EXCEPTIONS ---
+        // Trend Rule: BUY only if EMA 21 > EMA 200, SELL only if EMA 21 < EMA 200.
+        // Exception: Major Price Movement (RSI Extreme or Overextension)
+
+        const isOversoldReversal = rsi < 25;     // Extreme Oversold
+        const isOverboughtReversal = rsi > 75;   // Extreme Overbought
+        const isOverextendedBuy = (data.emaExtension || 0) < -3; // Price crashed 3% below EMA
+        const isOverextendedSell = (data.emaExtension || 0) > 3; // Price pumped 3% above EMA
+
+        const isReversalBuy = isOversoldReversal || isOverextendedBuy;
+        const isReversalSell = isOverboughtReversal || isOverextendedSell;
+
+        if (totalScore >= 50) {
+            if (isGoldenCross || isReversalBuy) {
+                type = 'BUY';
+                if (!isGoldenCross) {
+                    reasons.push("⚠️ Counter-Trend Reversal Trade: Reversal conditions met (RSI < 25 or Extension < -3%)");
+                }
+            } else {
+                reasons.push("⛔ BUY Filtered: Price is in Downtrend (EMA 21 < 200) and no Reversal setup found.");
+            }
+        }
+        else if (totalScore <= -50) {
+            if (isDeathCross || isReversalSell) {
+                type = 'SELL';
+                if (!isDeathCross) {
+                    reasons.push("⚠️ Counter-Trend Reversal Trade: Reversal conditions met (RSI > 75 or Extension > 3%)");
+                }
+            } else {
+                reasons.push("⛔ SELL Filtered: Price is in Uptrend (EMA 21 > 200) and no Reversal setup found.");
+            }
+        }
+
 
         return {
             type,

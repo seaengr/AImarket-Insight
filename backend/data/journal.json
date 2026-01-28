@@ -421,7 +421,9 @@
     "type": "BUY",
     "price": 89780.49,
     "confidence": 75,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559380188,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "zaegm6cyo",
@@ -430,7 +432,9 @@
     "type": "BUY",
     "price": 89786.11,
     "confidence": 100,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559381811,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "c92e7kdaj",
@@ -615,7 +619,9 @@
     "type": "BUY",
     "price": 89061.46,
     "confidence": 60,
-    "outcome": "PENDING"
+    "outcome": "WIN",
+    "verifiedAt": 1769559383588,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "ehivbyf3z",
@@ -624,7 +630,9 @@
     "type": "BUY",
     "price": 89629.17,
     "confidence": 100,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559385331,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "45q1j18cm",
@@ -633,7 +641,9 @@
     "type": "BUY",
     "price": 89620.42,
     "confidence": 60,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559386927,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "ywepsrtbn",
@@ -642,7 +652,9 @@
     "type": "BUY",
     "price": 89626.71,
     "confidence": 50,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559388535,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "498725dx1",
@@ -651,7 +663,9 @@
     "type": "BUY",
     "price": 89602.24,
     "confidence": 90,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559390194,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "u3x5hheig",
@@ -660,7 +674,9 @@
     "type": "BUY",
     "price": 89617.79,
     "confidence": 50,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559392727,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "ysg45cqqw",
@@ -669,7 +685,9 @@
     "type": "BUY",
     "price": 89654.25,
     "confidence": 75,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559394367,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "eck8f8q0o",
@@ -678,7 +696,9 @@
     "type": "BUY",
     "price": 89605.16,
     "confidence": 65,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559395971,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "5m48iz8j5",
@@ -687,7 +707,9 @@
     "type": "BUY",
     "price": 89595.41,
     "confidence": 75,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559397570,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "ic2cqmfh5",
@@ -696,7 +718,9 @@
     "type": "BUY",
     "price": 89560.39,
     "confidence": 85,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559399200,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "w3nxn0eqc",
@@ -705,7 +729,9 @@
     "type": "BUY",
     "price": 89549.98,
     "confidence": 85,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559400897,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "j5zhrr86k",
@@ -714,7 +740,9 @@
     "type": "BUY",
     "price": 89528,
     "confidence": 50,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559402490,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "hxrrb6ufz",
@@ -723,7 +751,9 @@
     "type": "BUY",
     "price": 89537.81,
     "confidence": 100,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559404244,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "k95x0j6e0",
@@ -732,7 +762,9 @@
     "type": "BUY",
     "price": 89527.25,
     "confidence": 60,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559405826,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "8l9xgz2m1",
@@ -741,7 +773,9 @@
     "type": "BUY",
     "price": 89535.05,
     "confidence": 75,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559407437,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "061j9xbsv",
@@ -750,7 +784,9 @@
     "type": "BUY",
     "price": 89536.76,
     "confidence": 85,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559409100,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "sovjlzm18",
@@ -759,7 +795,9 @@
     "type": "BUY",
     "price": 89536.77,
     "confidence": 50,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559410718,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "az2dgnl51",
@@ -768,7 +806,9 @@
     "type": "SELL",
     "price": 89536.77,
     "confidence": 50,
-    "outcome": "PENDING"
+    "outcome": "WIN",
+    "verifiedAt": 1769559412318,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "6f29oumd2",
@@ -777,7 +817,9 @@
     "type": "BUY",
     "price": 89536.76,
     "confidence": 60,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559414065,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "gybr95wcj",
@@ -786,7 +828,9 @@
     "type": "BUY",
     "price": 89431.87,
     "confidence": 60,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559415674,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "mgr2atem9",
@@ -795,7 +839,9 @@
     "type": "BUY",
     "price": 89416.14,
     "confidence": 60,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559417298,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "vcj5zxjpn",
@@ -804,7 +850,9 @@
     "type": "BUY",
     "price": 89472.83,
     "confidence": 50,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559418935,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "4bvxlkyjl",
@@ -813,7 +861,9 @@
     "type": "BUY",
     "price": 89512.05,
     "confidence": 65,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559420589,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "n9cp37m1l",
@@ -822,7 +872,9 @@
     "type": "SELL",
     "price": 89507.76,
     "confidence": 55,
-    "outcome": "PENDING"
+    "outcome": "WIN",
+    "verifiedAt": 1769559422289,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "bqgjsfjid",
@@ -831,7 +883,9 @@
     "type": "SELL",
     "price": 89145.4,
     "confidence": 85,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559423954,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "q47r71yig",
@@ -840,7 +894,9 @@
     "type": "SELL",
     "price": 89081.7,
     "confidence": 75,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559425573,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "crwolcfp0",
@@ -915,7 +971,9 @@
     "type": "BUY",
     "price": 88956.96,
     "confidence": 80,
-    "outcome": "PENDING"
+    "outcome": "WIN",
+    "verifiedAt": 1769559427239,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "hhu7k7lkp",
@@ -924,7 +982,9 @@
     "type": "BUY",
     "price": 89068.04,
     "confidence": 55,
-    "outcome": "PENDING"
+    "outcome": "WIN",
+    "verifiedAt": 1769559428859,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "2q77duelr",
@@ -933,7 +993,9 @@
     "type": "BUY",
     "price": 89069.72,
     "confidence": 50,
-    "outcome": "PENDING"
+    "outcome": "WIN",
+    "verifiedAt": 1769559430477,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "w6qt0chfi",
@@ -942,7 +1004,9 @@
     "type": "SELL",
     "price": 89060.01,
     "confidence": 50,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1769559432096,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "3gs6a0v6f",
@@ -951,7 +1015,9 @@
     "type": "BUY",
     "price": 88507.15,
     "confidence": 55,
-    "outcome": "PENDING"
+    "outcome": "WIN",
+    "verifiedAt": 1769559433752,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "pig5b205i",
@@ -960,7 +1026,9 @@
     "type": "BUY",
     "price": 88608.33,
     "confidence": 60,
-    "outcome": "PENDING"
+    "outcome": "WIN",
+    "verifiedAt": 1769559435458,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "xpd6f13fl",
@@ -969,7 +1037,9 @@
     "type": "BUY",
     "price": 88692.09,
     "confidence": 50,
-    "outcome": "PENDING"
+    "outcome": "WIN",
+    "verifiedAt": 1769559437089,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "456g7o4q4",
@@ -978,7 +1048,9 @@
     "type": "BUY",
     "price": 88790,
     "confidence": 50,
-    "outcome": "PENDING"
+    "outcome": "WIN",
+    "verifiedAt": 1769559438726,
+    "actualPriceAtFullfillment": 89208.6621
   },
   {
     "id": "qc1esdbk6",
@@ -987,6 +1059,305 @@
     "type": "BUY",
     "price": 88781.12,
     "confidence": 60,
+    "outcome": "WIN",
+    "verifiedAt": 1769559440417,
+    "actualPriceAtFullfillment": 89208.6621
+  },
+  {
+    "id": "zprgfbb9r",
+    "timestamp": 1769348714198,
+    "symbol": "XAU",
+    "type": "BUY",
+    "price": 434.46,
+    "confidence": 90,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "2u2r0ziba",
+    "timestamp": 1769349336946,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4987.545,
+    "confidence": 66,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "h3p0oia3z",
+    "timestamp": 1769387830205,
+    "symbol": "BTCUSDT.P",
+    "type": "SELL",
+    "price": 86704.9,
+    "confidence": 75,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "7zvbp6rcu",
+    "timestamp": 1769387944389,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5049.735,
+    "confidence": 55,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "3xir1kprk",
+    "timestamp": 1769388548346,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5048.565,
+    "confidence": 88,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "op1977d9w",
+    "timestamp": 1769388848631,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5047.74,
+    "confidence": 55,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "sb5kb4eb5",
+    "timestamp": 1769390586805,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5067.2,
+    "confidence": 100,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "ochiw3wqf",
+    "timestamp": 1769391318615,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5083.77,
+    "confidence": 66,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "tix49lalb",
+    "timestamp": 1769392584716,
+    "symbol": "XAUUSDT.P",
+    "type": "SELL",
+    "price": 5071.48,
+    "confidence": 100,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "1jgi2e04z",
+    "timestamp": 1769393790664,
+    "symbol": "XAUUSDT.P",
+    "type": "BUY",
+    "price": 5069.65,
+    "confidence": 65,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "ujyc7mlr6",
+    "timestamp": 1769395299596,
+    "symbol": "XAUUSDT.P",
+    "type": "BUY",
+    "price": 5088.7,
+    "confidence": 65,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "tllr7maav",
+    "timestamp": 1769396204706,
+    "symbol": "XAUUSDT.P",
+    "type": "BUY",
+    "price": 5084.31,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "mu4k9aqlc",
+    "timestamp": 1769396806666,
+    "symbol": "XAUUSDT.P",
+    "type": "SELL",
+    "price": 5086.2,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "b8e25vgkm",
+    "timestamp": 1769397388702,
+    "symbol": "XAUUSDT.P",
+    "type": "BUY",
+    "price": 5087.58,
+    "confidence": 85,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "ko4f0pfo9",
+    "timestamp": 1769398292817,
+    "symbol": "XAUUSDT.P",
+    "type": "BUY",
+    "price": 5083.48,
+    "confidence": 90,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "wk9vkcj1o",
+    "timestamp": 1769398593815,
+    "symbol": "XAUUSDT.P",
+    "type": "BUY",
+    "price": 5082.95,
+    "confidence": 60,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "6y47i5i8e",
+    "timestamp": 1769398894781,
+    "symbol": "XAUUSDT.P",
+    "type": "BUY",
+    "price": 5079.7,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "l4y4tm6m9",
+    "timestamp": 1769399498970,
+    "symbol": "XAUUSDT.P",
+    "type": "BUY",
+    "price": 5076.56,
+    "confidence": 60,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "aoykdbes9",
+    "timestamp": 1769400408173,
+    "symbol": "XAUUSDT.P",
+    "type": "BUY",
+    "price": 5073.01,
+    "confidence": 65,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "8ctl8tj1u",
+    "timestamp": 1769402218296,
+    "symbol": "XAUUSDT.P",
+    "type": "BUY",
+    "price": 5074.15,
+    "confidence": 80,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "48kqolpvr",
+    "timestamp": 1769402520560,
+    "symbol": "XAUUSDT.P",
+    "type": "BUY",
+    "price": 5071.47,
+    "confidence": 50,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "6ilq08ctk",
+    "timestamp": 1769404988281,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5059.74,
+    "confidence": 55,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "h7gclp71d",
+    "timestamp": 1769405286770,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5066.69,
+    "confidence": 55,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "47smpp7fy",
+    "timestamp": 1769557700961,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5169.2,
+    "confidence": 61,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "b98qno4a0",
+    "timestamp": 1769557998753,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5170.545,
+    "confidence": 83,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "4zp9rwppz",
+    "timestamp": 1769558601824,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5160.825,
+    "confidence": 55,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "dhzu1gmae",
+    "timestamp": 1769558903252,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5166.66,
+    "confidence": 55,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "7hyr1bjfy",
+    "timestamp": 1769558989029,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5167.695,
+    "confidence": 61,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "ast5wwd1v",
+    "timestamp": 1769559289517,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5165.485,
+    "confidence": 66,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "d9huim4iv",
+    "timestamp": 1769560495229,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5165.475,
+    "confidence": 72,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "8d1dz6n1w",
+    "timestamp": 1769560797178,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5169.33,
+    "confidence": 66,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "hpa9qxjtb",
+    "timestamp": 1769561402384,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5170.72,
+    "confidence": 83,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "p6u2r4quf",
+    "timestamp": 1769561850657,
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "price": 5177.28,
+    "confidence": 66,
     "outcome": "PENDING"
   }
 ]
