@@ -1359,5 +1359,32 @@
     "price": 5177.28,
     "confidence": 66,
     "outcome": "PENDING"
+  },
+  {
+    "id": "0q6mo7cql",
+    "timestamp": 1769562755528,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5179.23,
+    "confidence": 72,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "0g92tjohm",
+    "timestamp": 1769563356662,
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "price": 5190.165,
+    "confidence": 55,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "9uni8qcfh",
+    "timestamp": 1769563438589,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5190.085,
+    "confidence": 72,
+    "outcome": "PENDING"
   }
 ]
