@@ -15,9 +15,14 @@ export class MarketService {
         const liveEma200 = await alphaVantageService.getEMA(symbol, 200);
         const liveRsi = await alphaVantageService.getRSI(symbol, 14);
 
-        // SOURCE OF TRUTH: Use the price from the user's screen first.
-        // Fallback to API only if scraper fails.
-        const price = currentPrice || await alphaVantageService.getQuote(symbol);
+        // Fetch OHLC
+        const quoteData = await alphaVantageService.getQuote(symbol);
+        const price = currentPrice || quoteData?.price || 0;
+
+        // Simulating OHLC if API fails or we only have currentPrice
+        const open = quoteData?.open || price;
+        const high = quoteData?.high || price * 1.001;
+        const low = quoteData?.low || price * 0.999;
 
         if (!price) {
             throw new Error(`Unable to fetch price for ${symbol}. Please ensure the symbol is correct or your API key is active.`);
@@ -83,6 +88,9 @@ export class MarketService {
         return {
             symbol,
             price,
+            open,
+            high,
+            low,
             change24h: 2.5,
             indicators,
             mtfTrend: {

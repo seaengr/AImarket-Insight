@@ -1,6 +1,7 @@
 import { MarketData, SignalType, ConfidenceBreakdown } from '../../types/api.types';
 import { logger } from '../../shared/logger';
 import { journalService } from '../journal/journal.service';
+import { scenarioService } from '../scenarios/scenario.service';
 
 export interface SignalResult {
     type: SignalType;
@@ -59,36 +60,43 @@ export class SignalService {
         // Pine Script Conditions:
         // - BUY: uptrend AND low <= fast AND close > fast AND greenCandle AND rsi > 30 AND rsi < 70
         // - SELL: downtrend AND high >= fast AND close < fast AND redCandle AND rsi > 30 AND rsi < 70
+        // - Alternative: Oversold/Overbought bounces off EMA 21
 
         const rsiInRange = rsi > 30 && rsi < 70; // Not overbought or oversold
 
-        // Simulate candle color: If price > ema21, likely closed green. If price < ema21, likely closed red.
-        const isGreenCandle = data.price > ema21; // Simplified: Bullish close
-        const isRedCandle = data.price < ema21;   // Simplified: Bearish close
+        // Candle Color Logic: Use O/C if available, else fallback to Price Vs EMA (Simulation)
+        // If 'open' is undefined (mock data), assume candle color matches trend for safety.
+        const isGreenCandle = data.open ? data.price > data.open : data.price > ema21;
+        const isRedCandle = data.open ? data.price < data.open : data.price < ema21;
 
-        // Perfect Pullback BUY: Golden Cross + Price touched EMA21 + Bounced up + RSI in range
-        const isPullbackBuy = isGoldenCross && data.price <= (ema21 * 1.002) && data.price > ema21 && rsiInRange;
+        // Wick Logic: Did price touch EMA 21?
+        // BUY: Low of candle dipped below EMA 21
+        const lowTouchedEma = data.low ? data.low <= ema21 : data.price <= (ema21 * 1.002);
+        // SELL: High of candle popped above EMA 21
+        const highTouchedEma = data.high ? data.high >= ema21 : data.price >= (ema21 * 0.998);
 
-        // Perfect Pullback SELL: Death Cross + Price touched EMA21 + Rejected down + RSI in range
-        const isPullbackSell = isDeathCross && data.price >= (ema21 * 0.998) && data.price < ema21 && rsiInRange;
+        // --- THE SNIPER LOGIC (Strict Pullback) ---
+        const isPullbackBuy = isGoldenCross && lowTouchedEma && data.price > ema21 && isGreenCandle && rsiInRange;
+        const isPullbackSell = isDeathCross && highTouchedEma && data.price < ema21 && isRedCandle && rsiInRange;
 
         // Alternative: Oversold/Overbought Bounces (from Pine Script)
-        const buyOversold = rsi < 30 && isGreenCandle;
-        const sellOverbought = rsi > 70 && isRedCandle;
+        // logic: rsi < 30 and greenCandle and strongCandle and close > fast
+        const buyOversold = rsi < 30 && isGreenCandle && data.price > ema21;
+        const sellOverbought = rsi > 70 && isRedCandle && data.price < ema21;
 
         if (isPullbackBuy || buyOversold) {
             pineScript = 30;
             if (isPullbackBuy) {
-                reasons.push('Pine Script: Perfect Pullback to EMA 21 + RSI Confirmed');
+                reasons.push('Pine Script Snipe: Perfect Pullback (Wick touched EMA 21) + Green Candle');
             } else {
-                reasons.push('Pine Script: Oversold Bounce (RSI < 30) + Green Candle');
+                reasons.push('Pine Script Snipe: Oversold Bounce (RSI < 30) + Green Candle');
             }
         } else if (isPullbackSell || sellOverbought) {
             pineScript = -30;
             if (isPullbackSell) {
-                reasons.push('Pine Script: Perfect Pullback to EMA 21 + RSI Confirmed');
+                reasons.push('Pine Script Snipe: Perfect Pullback (Wick touched EMA 21) + Red Candle');
             } else {
-                reasons.push('Pine Script: Overbought Rejection (RSI > 70) + Red Candle');
+                reasons.push('Pine Script Snipe: Overbought Rejection (RSI > 70) + Red Candle');
             }
         }
 
@@ -204,9 +212,31 @@ export class SignalService {
                 reasons.push(`WARNING: High impact news detected (${data.newsSentiment.sentiment})`);
             }
         }
-
         const totalScore = baselineScore + corr + news;
 
+        // --- SCENARIO MEMORY (DEJA VU) ---
+        // Check if we've seen this pattern before
+        const headlines = data.newsSentiment?.sentiment ? [data.newsSentiment.sentiment] : []; // Placeholder, we should pass real headlines
+        const similarScenarios = scenarioService.findSimilarScenarios({
+            symbol: data.symbol,
+            rsi: data.indicators.rsi,
+            trend: data.indicators.ema21 > data.indicators.ema200 ? 'Bullish' : 'Bearish',
+            headlines: headlines
+        });
+
+        if (similarScenarios.length > 0) {
+            const wins = similarScenarios.filter(s => s.outcome.result === 'WIN').length;
+            const losses = similarScenarios.filter(s => s.outcome.result === 'LOSS').length;
+            const scenarioWinRate = (wins / similarScenarios.length) * 100;
+
+            if (scenarioWinRate > 70) {
+                // Good Deja Vu
+                reasons.push(`✨ Market Memory: Found ${similarScenarios.length} similar past scenarios with ${scenarioWinRate.toFixed(0)}% Win Rate.`);
+            } else if (scenarioWinRate < 40) {
+                // Bad Deja Vu
+                reasons.push(`⚠️ Deja Vu Warning: Found ${similarScenarios.length} similar scenarios where price reversed against us.`);
+            }
+        }
 
         // --- REINFORCEMENT LEARNING ADJUSTMENT ---
         let finalConfidence = Math.abs(totalScore);

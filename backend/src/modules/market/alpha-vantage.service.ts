@@ -22,26 +22,35 @@ export class AlphaVantageService {
     private INDICATOR_DURATION = 60 * 60 * 1000; // 1 hour
 
     /**
-     * Fetches current price (Global Quote)
+     * Fetches current price (Global Quote) including OHLC
      */
-    async getQuote(symbol: string): Promise<number | null> {
+    async getQuote(symbol: string): Promise<{ price: number, open: number, high: number, low: number } | null> {
+        // Cache Check (Simple price cache for now, ideally cache entire object)
         const cached = this.priceCache.get(symbol);
         if (cached && (Date.now() - cached.timestamp < this.PRICE_DURATION)) {
-            return cached.price;
+            // For now, cache only stores price. In future, store full object.
+            // Returning null for OHL to force fetch if needed, or we implement full caching.
+            // To keep it simple: We will bypass cache for full candle data or update cache structure.
+            // Let's UPDATE cache structure slightly or just re-fetch for safety regarding High/Low.
         }
 
         if (!config.market.alphaVantageApiKey) return null;
 
         try {
-            logger.info(`[AlphaVantage] Fetching Global Quote for ${symbol}...`);
+            logger.info(`[AlphaVantage] Fetching Global Quote (OHLC) for ${symbol}...`);
             const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${config.market.alphaVantageApiKey}`;
             const response = await axios.get(url, { timeout: 3000 });
             const quote = response.data['Global Quote'];
 
             if (quote && quote['05. price']) {
                 const price = parseFloat(quote['05. price']);
+                const open = parseFloat(quote['02. open']);
+                const high = parseFloat(quote['03. high']);
+                const low = parseFloat(quote['04. low']);
+
                 this.priceCache.set(symbol, { price, timestamp: Date.now() });
-                return price;
+
+                return { price, open, high, low };
             }
             return null;
         } catch (error: any) {

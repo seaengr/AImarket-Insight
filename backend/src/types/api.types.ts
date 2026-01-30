@@ -1,6 +1,9 @@
 export interface MarketData {
     symbol: string;
     price: number;
+    open?: number;
+    high?: number;
+    low?: number;
     change24h: number;
     indicators: {
         rsi: number;
