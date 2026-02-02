@@ -1,8 +1,10 @@
 import { MarketData } from '../../types/api.types';
 import { logger } from '../../shared/logger';
 import { alphaVantageService } from './alpha-vantage.service';
+import { twelveDataService } from './twelve-data.service';
 import { newsService } from '../news/news.service';
 import { aiService } from '../ai/ai.service';
+import { config } from '../../shared/config';
 
 export class MarketService {
     /**
@@ -11,12 +13,19 @@ export class MarketService {
     async getMarketData(symbol: string, currentPrice?: number): Promise<MarketData> {
         logger.info(`Fetching market data for ${symbol}${currentPrice ? ` at ${currentPrice}` : ''}`);
 
-        const liveEma21 = await alphaVantageService.getEMA(symbol, 21);
-        const liveEma200 = await alphaVantageService.getEMA(symbol, 200);
-        const liveRsi = await alphaVantageService.getRSI(symbol, 14);
+        // Determine Service to use: Twelve Data (Primary) or Alpha Vantage
+        const useTwelveData = !!config.market.twelveDataApiKey;
+        const service = useTwelveData ? twelveDataService : alphaVantageService;
+        const serviceName = useTwelveData ? 'TwelveData' : 'AlphaVantage';
+
+        logger.info(`[MarketService] Using ${serviceName} as primary data source.`);
+
+        const liveEma21 = await service.getEMA(symbol, 21);
+        const liveEma200 = await service.getEMA(symbol, 200);
+        const liveRsi = await service.getRSI(symbol, 14);
 
         // Fetch OHLC
-        const quoteData = await alphaVantageService.getQuote(symbol);
+        const quoteData = await service.getQuote(symbol);
         const price = currentPrice || quoteData?.price || 0;
 
         // Simulating OHLC if API fails or we only have currentPrice
@@ -28,19 +37,25 @@ export class MarketService {
             throw new Error(`Unable to fetch price for ${symbol}. Please ensure the symbol is correct or your API key is active.`);
         }
 
+        if (!liveEma21 || !liveEma200 || !liveRsi) {
+            logger.warn(`[MarketService] Missing critical indicators for ${symbol}. EMA21: ${liveEma21}, EMA200: ${liveEma200}, RSI: ${liveRsi}`);
+            // FAIL SAFE: Do not return random data. Throw error to stop signal generation.
+            throw new Error('Market Data Unavailable: Critical Indicators (EMA/RSI) missing. Cannot generate credible signal.');
+        }
+
         const indicators = {
-            rsi: liveRsi || Math.floor(Math.random() * (75 - 25 + 1)) + 25,
-            ema9: price * (1 + (Math.random() * 0.005 - 0.0025)), // Still mock
-            ema21: liveEma21 || price * (1 + (Math.random() * 0.01 - 0.005)),
-            ema20: price * (1 + (Math.random() * 0.01 - 0.005)),
-            ema50: price * (1 + (Math.random() * 0.02 - 0.01)),
-            ema200: liveEma200 || price * (1 + (Math.random() * 0.05 - 0.025)),
+            rsi: liveRsi,
+            ema9: price, // Deprecated/Not used in Sniper
+            ema21: liveEma21,
+            ema20: price, // Deprecated
+            ema50: price, // Deprecated
+            ema200: liveEma200,
             macd: {
-                value: Math.random() * 10 - 5,
-                signal: Math.random() * 10 - 5,
-                histogram: Math.random() * 4 - 2
+                value: 0,
+                signal: 0,
+                histogram: 0
             },
-            adx: Math.floor(Math.random() * 40) + 10
+            adx: 25 // Default placeholder
         };
 
         // 2. Fundamental Data (Live News + AI Sentiment)
@@ -98,7 +113,7 @@ export class MarketService {
                 '15m': is15mBullish ? 'Bullish' : 'Bearish',
                 '1H': Math.random() > 0.5 ? 'Bullish' : 'Bearish',
                 '4H': Math.random() > 0.5 ? 'Bullish' : 'Bearish',
-                '1D': await alphaVantageService.getDailyTrend(symbol)
+                '1D': await service.getDailyTrend(symbol)
             },
             momentum: 'Strong Bullish',
             volatility: 'Moderate',

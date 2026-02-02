@@ -15,6 +15,7 @@ export const config = {
     market: {
         fallbackMode: true, // Use mock data if API limits reached
         alphaVantageApiKey: process.env.ALPHA_VANTAGE_API_KEY || '',
+        twelveDataApiKey: process.env.TWELVE_DATA_API_KEY || '',
     },
     cors: {
         origin: '*', // For development, update to extension ID in production

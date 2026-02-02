@@ -6,7 +6,9 @@
     "type": "BUY",
     "price": 4864.99,
     "confidence": 95,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1770005786188,
+    "actualPriceAtFullfillment": 4657.91311
   },
   {
     "id": "o2jxnqqa4",
@@ -15,7 +17,9 @@
     "type": "BUY",
     "price": 4864.99,
     "confidence": 75,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1770007587906,
+    "actualPriceAtFullfillment": 4686.94613
   },
   {
     "id": "sgx98gl7m",
@@ -24,7 +28,9 @@
     "type": "BUY",
     "price": 4864.99,
     "confidence": 100,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1770007593340,
+    "actualPriceAtFullfillment": 4687.70482
   },
   {
     "id": "vlhlulya0",
@@ -33,7 +39,9 @@
     "type": "BUY",
     "price": 4864.99,
     "confidence": 100,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1770007594663,
+    "actualPriceAtFullfillment": 4687.70482
   },
   {
     "id": "yunurgigb",
@@ -1731,7 +1739,9 @@
     "type": "BUY",
     "price": 5347.155,
     "confidence": 66,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1770005826407,
+    "actualPriceAtFullfillment": 4666.73093
   },
   {
     "id": "lnqyziqjq",
@@ -1740,7 +1750,9 @@
     "type": "BUY",
     "price": 5365.24,
     "confidence": 100,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1770005830715,
+    "actualPriceAtFullfillment": 4666.73093
   },
   {
     "id": "gxgg031rs",
@@ -1785,7 +1797,9 @@
     "type": "BUY",
     "price": 5159.645,
     "confidence": 99,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1770005825952,
+    "actualPriceAtFullfillment": 4666.73093
   },
   {
     "id": "ells5vu1t",
@@ -1794,7 +1808,9 @@
     "type": "BUY",
     "price": 5220.115,
     "confidence": 88,
-    "outcome": "PENDING"
+    "outcome": "LOSS",
+    "verifiedAt": 1770005830126,
+    "actualPriceAtFullfillment": 4666.73093
   },
   {
     "id": "conpnrknn",
@@ -1884,6 +1900,100 @@
     "type": "BUY",
     "price": 5186.245,
     "confidence": 55,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "vsorgsvxi",
+    "timestamp": 1769755704060,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5166.415,
+    "confidence": 55,
+    "outcome": "LOSS",
+    "verifiedAt": 1770005826252,
+    "actualPriceAtFullfillment": 4666.73093
+  },
+  {
+    "id": "4h6reztap",
+    "timestamp": 1769756006066,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 5163.03,
+    "confidence": 55,
+    "outcome": "LOSS",
+    "verifiedAt": 1770005830579,
+    "actualPriceAtFullfillment": 4666.73093
+  },
+  {
+    "id": "6j9eauxul",
+    "timestamp": 1769989925162,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4745.405,
+    "confidence": 55,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "tbtnyaedd",
+    "timestamp": 1769991483455,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4850.04,
+    "confidence": 72,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "r9jfsp829",
+    "timestamp": 1769992085630,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4850.395,
+    "confidence": 72,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "h4kj0ry6n",
+    "timestamp": 1769992988374,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4829.32,
+    "confidence": 72,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "fvtm2rpkb",
+    "timestamp": 1769996487702,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4699.4,
+    "confidence": 55,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "32oy33pyv",
+    "timestamp": 1769996787474,
+    "symbol": "XAUUSD",
+    "type": "SELL",
+    "price": 4708.865,
+    "confidence": 61,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "r4sk5m9nu",
+    "timestamp": 1769999802190,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4760.535,
+    "confidence": 83,
+    "outcome": "PENDING"
+  },
+  {
+    "id": "4hwiwpdrj",
+    "timestamp": 1770000402992,
+    "symbol": "XAUUSD",
+    "type": "BUY",
+    "price": 4752.245,
+    "confidence": 83,
     "outcome": "PENDING"
   }
 ]

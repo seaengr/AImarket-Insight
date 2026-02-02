@@ -76,7 +76,7 @@ export const analyzeController = async (req: Request, res: Response) => {
         const message = error.message || 'Internal server error';
         logger.error(`Analysis failed: ${message}`);
 
-        if (message.includes('Unable to fetch price') || message.includes('API key')) {
+        if (message.includes('Unable to fetch price') || message.includes('API key') || message.includes('Market Data Unavailable')) {
             return res.status(422).json({ error: message });
         }
 
