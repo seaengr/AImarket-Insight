@@ -25,8 +25,10 @@ export class AIService {
             // 1. Check Configured Provider: GEMINI (Primary)
             if (config.ai.provider === 'gemini' || config.ai.geminiApiKey) {
                 try {
+                    const modelName = config.ai.model || "gemini-1.5-flash";
+                    logger.info(`[AIService] Using model: ${modelName}`);
                     const genAI = new GoogleGenerativeAI(config.ai.geminiApiKey);
-                    const model = genAI.getGenerativeModel({ model: config.ai.model || "gemini-1.5-flash" });
+                    const model = genAI.getGenerativeModel({ model: modelName });
 
                     const result = await model.generateContent(prompt);
                     const response = await result.response;

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import { marketService } from '../modules/market/market.service';
 import { signalService } from '../modules/signal/signal.service';
+import { sltpService } from '../modules/signal/sltp.service';
 import { aiService } from '../modules/ai/ai.service';
 import { logger } from '../shared/logger';
 import { AnalysisResponse } from '../types/api.types';
@@ -27,14 +28,44 @@ export const analyzeController = async (req: Request, res: Response) => {
 
         // 2. Compute Signal
         const signalResult = signalService.generateSignal(marketData, correlation);
-        const levels = signalService.calculateLevels(marketData.price, signalResult.type);
 
-        // 3. Log Signal to Journal (Reinforcement Learning)
+        // 3. Calculate Dynamic SL/TP Levels
+        let levels;
+        let sltpReasoning = '';
+        let atrValue = 0;
+
+        if (signalResult.type !== 'HOLD') {
+            const dynamicLevels = await sltpService.calculateLevels(
+                symbol,
+                marketData.price,
+                signalResult.type,
+                marketData.indicators.rsi,
+                marketData.newsSentiment?.strength || 'Low'
+            );
+
+            levels = {
+                entryZone: { low: dynamicLevels.entryLow, high: dynamicLevels.entryHigh },
+                takeProfit: {
+                    tp1: dynamicLevels.takeProfit1,
+                    tp2: dynamicLevels.takeProfit2,
+                    tp3: dynamicLevels.takeProfit3
+                },
+                stopLoss: dynamicLevels.stopLoss
+            };
+            sltpReasoning = dynamicLevels.reasoning;
+            atrValue = dynamicLevels.atrValue;
+
+            logger.info(`[SLTP] ${symbol}: ATR=${atrValue.toFixed(2)}, SL=${dynamicLevels.stopLoss.toFixed(2)}, Reason: ${sltpReasoning}`);
+        } else {
+            levels = signalService.calculateLevels(marketData.price, signalResult.type);
+        }
+
+        // 4. Log Signal to Journal (Reinforcement Learning)
         if (signalResult.type !== 'HOLD') {
             await journalService.logSignal(symbol, signalResult.type, marketData.price, signalResult.confidence);
         }
 
-        // 4. Construct Initial Response (needed for AI)
+        // 5. Construct Initial Response (needed for AI)
         const analysisResponse: AnalysisResponse = {
             marketInfo: {
                 symbol,
@@ -57,11 +88,13 @@ export const analyzeController = async (req: Request, res: Response) => {
                 newsSentiment: marketData.newsSentiment?.sentiment || 'Neutral',
                 newsStrength: marketData.newsSentiment?.strength || 'Low',
                 emaExtension: marketData.emaExtension,
-                mirrorPrice: marketData.mirrorPrice
+                mirrorPrice: marketData.mirrorPrice,
+                atrValue: atrValue,
+                sltpReasoning: sltpReasoning
             }
         };
 
-        // 4. Generate AI Explanation
+        // 6. Generate AI Explanation
         if (includeAi) {
             analysisResponse.explanation = await aiService.explainSignal(analysisResponse);
         }

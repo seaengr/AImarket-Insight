@@ -82,5 +82,7 @@ export interface AnalysisResponse {
         newsStrength: string;
         emaExtension?: number;
         mirrorPrice?: number;
+        atrValue?: number;
+        sltpReasoning?: string;
     };
 }

@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const apiKey = 'a09dd7121cb340cd88137cf9d4454888';
-const symbol = 'XAU/USD';
+const symbol = 'XAUUSDT.P';
 
 async function test() {
     console.log(`Testing Twelve Data API for ${symbol}...`);

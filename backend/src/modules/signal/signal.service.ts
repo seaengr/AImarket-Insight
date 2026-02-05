@@ -310,14 +310,21 @@ export class SignalService {
             return {
                 entryZone: { low: 0, high: 0 },
                 takeProfit: { tp1: 0, tp2: 0, tp3: 0 },
-                stopLoss: 0
+                stopLoss: 0,
+                atrValue: 0,
+                sltpReasoning: ''
             };
         }
 
-        // --- Day Trading & Scalping Profile (0.5% Volatility) ---
-        const atr = price * 0.005;
+        // --- FALLBACK: Synchronous calculation for compatibility ---
+        // The async version is in sltpService.calculateLevels()
+        // This is kept for backwards compatibility but should be replaced
 
-        // Tight Entry Zone (0.1% buffer)
+        // Asset-specific ATR multipliers
+        const atrMultiplier = 0.012; // 1.2% default for Gold
+        const atr = price * atrMultiplier;
+
+        // Entry Zone (0.1% buffer)
         const entryLow = price * 0.999;
         const entryHigh = price * 1.001;
 
@@ -329,7 +336,9 @@ export class SignalService {
                     tp2: price + (atr * 1.5),   // 1.5:1 RR
                     tp3: price + (atr * 2)      // 2:1 RR
                 },
-                stopLoss: price - atr
+                stopLoss: price - atr,
+                atrValue: atr,
+                sltpReasoning: 'Using 1.2% ATR for Gold (fallback)'
             };
         }
         return {
@@ -337,9 +346,11 @@ export class SignalService {
             takeProfit: {
                 tp1: price - atr,
                 tp2: price - (atr * 1.5),
-                tp3: price - (atr * 2.5)
+                tp3: price - (atr * 2)
             },
-            stopLoss: price + atr
+            stopLoss: price + atr,
+            atrValue: atr,
+            sltpReasoning: 'Using 1.2% ATR for Gold (fallback)'
         };
     }
 }

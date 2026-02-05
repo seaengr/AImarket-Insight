@@ -15,11 +15,28 @@ export class TwelveDataService {
      * Twelve Data requires slashes for Forex (XAU/USD instead of XAUUSD)
      */
     private formatSymbol(symbol: string): string {
-        const clean = symbol.toUpperCase().trim();
-        // If it's a 6-char symbol without a slash (e.g. XAUUSD, EURUSD), add the slash
+        let clean = symbol.toUpperCase().trim();
+
+        // 1. Remove common exchange/perpetual suffixes (.P, .PRP, :MEX, .USDT)
+        clean = clean.split('.')[0]; // Removes .P, .USDT, etc.
+        clean = clean.split(':')[0]; // Removes :MEX, etc.
+
+        // 2. Special mapping for GOLD (XAU)
+        // If it starts with XAU, we want XAU/USD
+        if (clean.startsWith('XAU')) {
+            return 'XAU/USD';
+        }
+
+        // 3. Handle pairs (e.g., EURUSD -> EUR/USD)
         if (clean.length === 6 && !clean.includes('/')) {
             return `${clean.substring(0, 3)}/${clean.substring(3)}`;
         }
+
+        // 4. Handle USDT crypto pairs (e.g., BTCUSDT -> BTC/USDT)
+        if (clean.endsWith('USDT') && !clean.includes('/')) {
+            return `${clean.replace('USDT', '')}/USDT`;
+        }
+
         return clean;
     }
 
