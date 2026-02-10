@@ -6,7 +6,7 @@ export class PromptBuilder {
     * Builds a strict, factor-based market analysis prompt
     * that teaches the AI the EMA 21/200 strategy.
     */
-   static buildExplanationPrompt(data: AnalysisResponse): string {
+   static buildExplanationPrompt(data: AnalysisResponse, hasVision: boolean = false): string {
       const { symbol, timeframe, compareAsset } = data.marketInfo;
       const { type: signal, confidence, breakdown } = data.signal;
       const { momentum, volatility, correlationValue, riskSentiment, newsSentiment, newsStrength, emaExtension, mirrorPrice } = data.metadata;
@@ -27,6 +27,17 @@ export class PromptBuilder {
 
       return `
 You are a senior professional trading assistant. Explain this trade logic to the user.
+
+${hasVision ? `
+---
+VISION ANALYSIS (EYE-IN-THE-SKY):
+You have been provided with a real-time screenshot of the TradingView chart. 
+1. Identify any visible Price Action patterns (Wedges, Channels, Head & Shoulders).
+2. Look for Candle formations (Hammers, Engulfing, Long Wicks).
+3. Verify if the technical indicator lines in the image match the data provided.
+4. If the visual chart conflicts with the data, prioritize the visible trend.
+---
+` : ''}
 
 ---
 HISTORICAL PERFORMANCE CONTEXT (Self-Reflection):

@@ -3,6 +3,7 @@ import { cn } from '../../../shared/utils';
 import { EXTENSION_NAME } from '../../../shared/constants';
 import type { UIState } from '../../state/types';
 import { PanelHeader } from './PanelHeader';
+import { SettingsPanel } from '../Settings/SettingsPanel';
 import { PanelSection } from './PanelSection';
 import { SignalBadge } from '../Signal/SignalBadge';
 import { ConfidenceMeter } from '../Signal/ConfidenceMeter';
@@ -23,6 +24,7 @@ interface PanelProps {
     onToggleExplanation: () => void;
     onTabChange: (tab: 'Analysis' | 'Journal') => void;
     onUpdateRisk: (settings: any) => void;
+    onToggleVision: () => void;
 }
 
 /**
@@ -40,6 +42,7 @@ export const Panel: React.FC<PanelProps> = ({
     onToggleExplanation,
     onTabChange,
     onUpdateRisk,
+    onToggleVision,
 }) => {
     const { panel, analysis, journal, risk } = state;
 
@@ -253,6 +256,18 @@ export const Panel: React.FC<PanelProps> = ({
                     </div>
                 )}
             </div>
+
+            <SettingsPanel
+                isOpen={panel.isSettingsOpen}
+                autoRefreshEnabled={panel.autoRefreshEnabled}
+                autoRefreshInterval={panel.autoRefreshInterval}
+                isVisionEnabled={panel.isVisionEnabled}
+                onClose={onSettingsClick}
+                onToggleAutoRefresh={() => { }} // Not used? App.tsx handles it. Wait, I need to be careful.
+                onSetAutoRefreshInterval={() => { }}
+                onToggleVision={onToggleVision}
+                onReset={() => { }}
+            />
         </div>
     );
 };

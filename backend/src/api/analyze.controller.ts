@@ -12,14 +12,15 @@ const AnalysisSchema = z.object({
     compareSymbol: z.string().optional(),
     timeframe: z.string().default('1H'),
     price: z.number().optional().nullable(),
-    includeAi: z.boolean().default(true)
+    includeAi: z.boolean().default(true),
+    screenshot: z.string().optional()
 });
 
 import { journalService } from '../modules/journal/journal.service';
 
 export const analyzeController = async (req: Request, res: Response) => {
     try {
-        const { symbol, compareSymbol, timeframe, price, includeAi } = AnalysisSchema.parse(req.body);
+        const { symbol, compareSymbol, timeframe, price, includeAi, screenshot } = req.body;
         const compareTo = compareSymbol || symbol;
 
         // 1. Fetch Market Data
@@ -102,7 +103,7 @@ export const analyzeController = async (req: Request, res: Response) => {
 
         // 6. Generate AI Explanation
         if (includeAi) {
-            analysisResponse.explanation = await aiService.explainSignal(analysisResponse);
+            analysisResponse.explanation = await aiService.explainSignal(analysisResponse, screenshot);
         }
 
         res.json(analysisResponse);

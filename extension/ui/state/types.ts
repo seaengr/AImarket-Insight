@@ -115,6 +115,7 @@ export interface PanelState {
     visibility: PanelVisibility;
     autoRefreshEnabled: boolean;
     autoRefreshInterval: number; // In seconds
+    isVisionEnabled: boolean;
 }
 
 // Complete UI store state
@@ -144,5 +145,6 @@ export interface UIActions {
     toggleVisibility: (section: keyof PanelVisibility) => void;
     updateAnalysis: (analysis: Partial<MarketAnalysis>) => void;
     updateRiskSettings: (settings: Partial<RiskSettings>) => void;
+    toggleVision: () => void;
     fetchJournal: () => Promise<void>;
 }

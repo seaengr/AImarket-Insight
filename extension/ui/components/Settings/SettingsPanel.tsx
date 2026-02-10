@@ -9,6 +9,8 @@ interface SettingsPanelProps {
     onClose: () => void;
     onToggleAutoRefresh: () => void;
     onSetAutoRefreshInterval: (seconds: number) => void;
+    isVisionEnabled: boolean;
+    onToggleVision: () => void;
     onReset: () => void;
 }
 
@@ -23,6 +25,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     onClose,
     onToggleAutoRefresh,
     onSetAutoRefreshInterval,
+    isVisionEnabled,
+    onToggleVision,
     onReset,
 }) => {
     if (!isOpen) return null;
@@ -89,6 +93,30 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                                 </select>
                             </div>
                         )}
+                    </div>
+
+                    <div className={styles.settingsGroup}>
+                        <div className={styles.settingsGroupTitle}>AI Brain</div>
+
+                        <div
+                            className={styles.settingsItem}
+                            onClick={(e) => { e.stopPropagation(); onToggleVision(); }}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <div className={styles.settingsLabelGroup}>
+                                <span className={styles.settingsLabel}>Vision Intelligence</span>
+                                <span className={styles.settingsSubLabel}>Analyze chart patterns</span>
+                            </div>
+                            <div
+                                className={cn(styles.toggle, isVisionEnabled && styles.active)}
+                                role="switch"
+                                aria-checked={isVisionEnabled}
+                                tabIndex={0}
+                            >
+                                <div className={styles.toggleKnob} />
+                            </div>
+                        </div>
                     </div>
                 </div>
 

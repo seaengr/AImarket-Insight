@@ -129,6 +129,10 @@ export const App: React.FC = () => {
         uiStore.reset();
     }, []);
 
+    const handleToggleVision = useCallback(() => {
+        uiStore.toggleVision();
+    }, []);
+
     // Drag start handler - passed through to panel header
     const handleDragStart = useCallback((e: React.MouseEvent) => {
         // Mark the header as a drag handle
@@ -154,6 +158,7 @@ export const App: React.FC = () => {
                         onToggleExplanation={handleToggleExplanation}
                         onTabChange={handleTabChange}
                         onUpdateRisk={handleUpdateRisk}
+                        onToggleVision={handleToggleVision}
                     />
                 ) : (
                     <div
@@ -181,9 +186,11 @@ export const App: React.FC = () => {
                 isOpen={state.panel.isSettingsOpen}
                 autoRefreshEnabled={state.panel.autoRefreshEnabled}
                 autoRefreshInterval={state.panel.autoRefreshInterval}
+                isVisionEnabled={state.panel.isVisionEnabled}
                 onClose={handleCloseSettings}
                 onToggleAutoRefresh={handleToggleAutoRefresh}
                 onSetAutoRefreshInterval={handleSetAutoRefreshInterval}
+                onToggleVision={handleToggleVision}
                 onReset={handleReset}
             />
         </>

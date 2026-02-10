@@ -43,6 +43,7 @@ export interface AnalysisRequest {
     symbol: string;
     compareSymbol?: string;
     timeframe: string;
+    screenshot?: string;
 }
 
 export type SignalType = 'BUY' | 'SELL' | 'HOLD';

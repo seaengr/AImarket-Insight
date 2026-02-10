@@ -24,6 +24,18 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
                 sendResponse({ success: false, error: error.message });
             });
 
-        return true; // Keep message channel open for async response
+        return true;
+    }
+
+    if (message.type === 'CAPTURE_SCREEN') {
+        chrome.tabs.captureVisibleTab(undefined as any, { format: 'jpeg', quality: 80 }, (dataUrl) => {
+            if (chrome.runtime.lastError) {
+                console.error('[Background] Capture failed:', chrome.runtime.lastError.message);
+                sendResponse({ success: false, error: chrome.runtime.lastError.message });
+            } else {
+                sendResponse({ success: true, dataUrl });
+            }
+        });
+        return true;
     }
 });

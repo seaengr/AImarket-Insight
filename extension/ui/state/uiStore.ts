@@ -23,6 +23,7 @@ const createInitialState = (): UIState => ({
         },
         autoRefreshEnabled: true,
         autoRefreshInterval: 300, // 5 minutes default
+        isVisionEnabled: false,
     },
     analysis: {
         marketInfo: { ...MOCK_DATA.marketInfo },
@@ -160,6 +161,28 @@ class UIStore {
         }));
     }
 
+    toggleVision(): void {
+        this.setState((state) => ({
+            ...state,
+            panel: { ...state.panel, isVisionEnabled: !state.panel.isVisionEnabled }
+        }));
+    }
+
+    private async captureScreenshot(): Promise<string | null> {
+        return new Promise((resolve) => {
+            chrome.runtime.sendMessage({ type: 'CAPTURE_SCREEN' }, (response) => {
+                if (chrome.runtime.lastError) {
+                    console.error('[Vision] Capture failed:', chrome.runtime.lastError.message);
+                    resolve(null);
+                } else if (response && response.success) {
+                    resolve(response.dataUrl);
+                } else {
+                    resolve(null);
+                }
+            });
+        });
+    }
+
     // Analysis updates (Integrated with Backend)
     // ... (fetchAnalysis method remains the same)
 
@@ -222,10 +245,16 @@ class UIStore {
         this.setError(null);
 
         try {
+            // Capture screenshot if vision is enabled
+            let screenshot = null;
+            if (this.state.panel.isVisionEnabled) {
+                screenshot = await this.captureScreenshot();
+            }
+
             const data = await this.proxyFetch(`${API_URL}/analyze`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ symbol, timeframe, price })
+                body: JSON.stringify({ symbol, timeframe, price, screenshot })
             });
 
             // Detect if signal changed and trigger alert

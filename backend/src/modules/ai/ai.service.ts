@@ -10,7 +10,7 @@ export class AIService {
      * Generates a natural language explanation for the signal.
      * Uses real AI (HuggingFace/Ollama/Gemini) if configured, else mock.
      */
-    async explainSignal(data: AnalysisResponse): Promise<string[]> {
+    async explainSignal(data: AnalysisResponse, screenshot?: string): Promise<string[]> {
         const { symbol } = data.marketInfo;
         const { type: signal } = data.signal;
 
@@ -19,18 +19,33 @@ export class AIService {
         }
 
         try {
-            logger.info(`Requesting AI explanation for ${symbol} via ${config.ai.provider}`);
-            const prompt = PromptBuilder.buildExplanationPrompt(data);
+            logger.info(`Requesting AI explanation for ${symbol} via ${config.ai.provider}${screenshot ? ' (with Vision)' : ''}`);
+            const prompt = PromptBuilder.buildExplanationPrompt(data, !!screenshot);
 
             // 1. Check Configured Provider: GEMINI (Primary)
             if (config.ai.provider === 'gemini' || config.ai.geminiApiKey) {
                 try {
-                    const modelName = config.ai.model || "gemini-1.5-flash";
+                    const modelName = screenshot ? "gemini-1.5-flash" : (config.ai.model || "gemini-1.5-flash");
                     logger.info(`[AIService] Using model: ${modelName}`);
                     const genAI = new GoogleGenerativeAI(config.ai.geminiApiKey);
                     const model = genAI.getGenerativeModel({ model: modelName });
 
-                    const result = await model.generateContent(prompt);
+                    const parts: any[] = [{ text: prompt }];
+
+                    if (screenshot) {
+                        // Extract base64 and mime type
+                        const match = screenshot.match(/^data:(image\/[a-z]+);base64,(.+)$/);
+                        if (match) {
+                            parts.push({
+                                inlineData: {
+                                    mimeType: match[1],
+                                    data: match[2]
+                                }
+                            });
+                        }
+                    }
+
+                    const result = await model.generateContent(parts);
                     const response = await result.response;
                     const text = response.text();
 
