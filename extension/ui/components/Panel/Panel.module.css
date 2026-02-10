@@ -500,3 +500,53 @@
   font-weight: 600;
   color: #ffffff;
 }
+
+/* Tabs logic */
+.tabs {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid #2a3347;
+  padding: 0 8px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px 8px;
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: #8b95a5;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.tab:hover {
+  color: #ffffff;
+}
+
+.tabActive {
+  color: #4a90d9;
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: #4a90d9;
+  border-radius: 2px 2px 0 0;
+}
+
+.tabContent {
+  padding: 16px;
+  height: auto;
+  min-height: 200px;
+  max-height: 450px;
+  overflow-y: auto;
+}

@@ -13,19 +13,43 @@ export class MarketService {
     async getMarketData(symbol: string, currentPrice?: number): Promise<MarketData> {
         logger.info(`Fetching market data for ${symbol}${currentPrice ? ` at ${currentPrice}` : ''}`);
 
-        // Determine Service to use: Twelve Data (Primary) or Alpha Vantage
-        const useTwelveData = !!config.market.twelveDataApiKey;
-        const service = useTwelveData ? twelveDataService : alphaVantageService;
-        const serviceName = useTwelveData ? 'TwelveData' : 'AlphaVantage';
+        // Define primary and secondary services
+        const primary = twelveDataService;
+        const secondary = alphaVantageService;
 
-        logger.info(`[MarketService] Using ${serviceName} as primary data source.`);
+        // 1. Fetch critical indicators with systematic fallback
+        const fetchEMA = async (period: number) => {
+            let val = await primary.getEMA(symbol, period);
+            if (val === null) {
+                logger.info(`[MarketService] EMA(${period}) TwelveData failed, falling back to AlphaVantage`);
+                val = await secondary.getEMA(symbol, period);
+            }
+            return val;
+        };
 
-        const liveEma21 = await service.getEMA(symbol, 21);
-        const liveEma200 = await service.getEMA(symbol, 200);
-        const liveRsi = await service.getRSI(symbol, 14);
+        const fetchRSI = async (period: number) => {
+            let val = await primary.getRSI(symbol, period);
+            if (val === null) {
+                logger.info(`[MarketService] RSI(${period}) TwelveData failed, falling back to AlphaVantage`);
+                val = await secondary.getRSI(symbol, period);
+            }
+            return val;
+        };
 
-        // Fetch OHLC
-        const quoteData = await service.getQuote(symbol);
+        const fetchQuote = async () => {
+            let val = await primary.getQuote(symbol);
+            if (val === null) {
+                logger.info(`[MarketService] Quote TwelveData failed, falling back to AlphaVantage`);
+                val = await secondary.getQuote(symbol);
+            }
+            return val;
+        };
+
+        const liveEma21 = await fetchEMA(21);
+        const liveEma200 = await fetchEMA(200);
+        const liveRsi = await fetchRSI(14);
+        const quoteData = await fetchQuote();
+
         const price = currentPrice || quoteData?.price || 0;
 
         // Simulating OHLC if API fails or we only have currentPrice
@@ -34,13 +58,12 @@ export class MarketService {
         const low = quoteData?.low || price * 0.999;
 
         if (!price) {
-            throw new Error(`Unable to fetch price for ${symbol}. Please ensure the symbol is correct or your API key is active.`);
+            throw new Error(`Unable to fetch price for ${symbol}. Please ensure the symbol is correct or your API keys are active.`);
         }
 
         if (!liveEma21 || !liveEma200 || !liveRsi) {
             logger.warn(`[MarketService] Missing critical indicators for ${symbol}. EMA21: ${liveEma21}, EMA200: ${liveEma200}, RSI: ${liveRsi}`);
-            // FAIL SAFE: Do not return random data. Throw error to stop signal generation.
-            throw new Error('Market Data Unavailable: Critical Indicators (EMA/RSI) missing. Cannot generate credible signal.');
+            throw new Error('Market Data Unavailable: Critical Indicators (EMA/RSI) missing. Please wait for API credits to refresh.');
         }
 
         const indicators = {
@@ -113,7 +136,13 @@ export class MarketService {
                 '15m': is15mBullish ? 'Bullish' : 'Bearish',
                 '1H': Math.random() > 0.5 ? 'Bullish' : 'Bearish',
                 '4H': Math.random() > 0.5 ? 'Bullish' : 'Bearish',
-                '1D': await service.getDailyTrend(symbol)
+                '1D': await (async () => {
+                    let trend = await primary.getDailyTrend(symbol);
+                    if (trend === 'Neutral' || !trend) {
+                        trend = await secondary.getDailyTrend(symbol);
+                    }
+                    return trend;
+                })()
             },
             momentum: 'Strong Bullish',
             volatility: 'Moderate',

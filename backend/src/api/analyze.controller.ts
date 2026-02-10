@@ -26,8 +26,8 @@ export const analyzeController = async (req: Request, res: Response) => {
         const marketData = await marketService.getMarketData(symbol, price ?? undefined);
         const correlation = marketService.getCorrelation(symbol, compareTo);
 
-        // 2. Compute Signal
-        const signalResult = signalService.generateSignal(marketData, correlation);
+        // 2. Compute Signal (with timeframe for Sniper vs Scalper mode)
+        const signalResult = signalService.generateSignal(marketData, correlation, timeframe);
 
         // 3. Calculate Dynamic SL/TP Levels
         let levels;
@@ -83,6 +83,11 @@ export const analyzeController = async (req: Request, res: Response) => {
             metadata: {
                 momentum: marketData.momentum,
                 volatility: marketData.volatility,
+                indicators: {
+                    rsi: marketData.indicators.rsi,
+                    ema21: marketData.indicators.ema21,
+                    ema200: marketData.indicators.ema200
+                },
                 correlationValue: marketData.correlation,
                 riskSentiment: marketData.riskSentiment,
                 newsSentiment: marketData.newsSentiment?.sentiment || 'Neutral',
@@ -90,7 +95,8 @@ export const analyzeController = async (req: Request, res: Response) => {
                 emaExtension: marketData.emaExtension,
                 mirrorPrice: marketData.mirrorPrice,
                 atrValue: atrValue,
-                sltpReasoning: sltpReasoning
+                sltpReasoning: sltpReasoning,
+                strategyMode: signalResult.strategyMode
             }
         };
 

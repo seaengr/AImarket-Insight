@@ -44,6 +44,26 @@ export interface TradeLevels {
     stopLoss: number;
 }
 
+// Journal Signal Log (Matches backend)
+export interface JournalSignal {
+    id: string;
+    timestamp: number;
+    symbol: string;
+    type: SignalType;
+    price: number;
+    confidence: number;
+    outcome: 'WIN' | 'LOSS' | 'PENDING';
+}
+
+// Journal Statistics
+export interface JournalStats {
+    winRate: number;
+    totalTrades: number;
+    wins: number;
+    losses: number;
+    scope: 'local' | 'global';
+}
+
 // Complete market analysis (future AI integration point)
 export interface MarketMetadata {
     momentum: string;
@@ -54,6 +74,9 @@ export interface MarketMetadata {
     newsStrength: string;
     emaExtension?: number;
     mirrorPrice?: number;
+    atrValue?: number;
+    sltpReasoning?: string;
+    strategyMode?: 'Sniper' | 'Scalper';
 }
 
 export interface MarketAnalysis {
@@ -72,12 +95,19 @@ export interface PanelVisibility {
     stopLoss: boolean;
 }
 
+// Risk Settings
+export interface RiskSettings {
+    accountBalance: number;
+    riskPercent: number;
+}
+
 // Panel UI state
 export interface PanelState {
     isVisible: boolean;
     isMinimized: boolean;
     isSettingsOpen: boolean;
     isExplanationExpanded: boolean;
+    activeTab: 'Analysis' | 'Journal';
     position: {
         top: number;
         left: number;
@@ -91,6 +121,11 @@ export interface PanelState {
 export interface UIState {
     panel: PanelState;
     analysis: MarketAnalysis;
+    journal: {
+        stats: JournalStats | null;
+        history: JournalSignal[];
+    };
+    risk: RiskSettings;
     isLoading: boolean;
     error: string | null;
 }
@@ -104,7 +139,10 @@ export interface UIActions {
     toggleMinimize: () => void;
     toggleSettings: () => void;
     toggleExplanation: () => void;
+    setActiveTab: (tab: 'Analysis' | 'Journal') => void;
     setPosition: (top: number, left: number) => void;
     toggleVisibility: (section: keyof PanelVisibility) => void;
     updateAnalysis: (analysis: Partial<MarketAnalysis>) => void;
+    updateRiskSettings: (settings: Partial<RiskSettings>) => void;
+    fetchJournal: () => Promise<void>;
 }

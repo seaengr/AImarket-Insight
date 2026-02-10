@@ -11,6 +11,20 @@ export class TwelveDataService {
     private PRICE_DURATION = 5 * 60 * 1000;      // 5 minutes
     private INDICATOR_DURATION = 60 * 60 * 1000; // 1 hour
 
+    private cooldownUntil = 0;
+
+    /**
+     * Checks if service belongs in cooldown (rate limited)
+     */
+    private inCooldown(): boolean {
+        return Date.now() < this.cooldownUntil;
+    }
+
+    private triggerCooldown(): void {
+        logger.warn('[TwelveData] Rate limit hit. Entering 60s cooldown.');
+        this.cooldownUntil = Date.now() + 61000; // 61 seconds for safety
+    }
+
     /**
      * Twelve Data requires slashes for Forex (XAU/USD instead of XAUUSD)
      */
@@ -45,12 +59,8 @@ export class TwelveDataService {
      */
     async getQuote(symbol: string): Promise<{ price: number, open: number, high: number, low: number } | null> {
         const formattedSymbol = this.formatSymbol(symbol);
-        const cached = this.priceCache.get(formattedSymbol);
-        if (cached && (Date.now() - cached.timestamp < this.PRICE_DURATION)) {
-            // Price cache only stores price. If we need full OHLC, we fetch or expand cache.
-        }
 
-        if (!config.market.twelveDataApiKey) return null;
+        if (!config.market.twelveDataApiKey || this.inCooldown()) return null;
 
         try {
             logger.info(`[TwelveData] Fetching Quote (OHLC) for ${formattedSymbol}...`);
@@ -71,11 +81,15 @@ export class TwelveDataService {
 
             if (data && data.status === 'error') {
                 logger.error(`[TwelveData] API Error for ${formattedSymbol}: ${data.message}`);
+                if (data.code === 429 || data.message.toLowerCase().includes('run out of api credits')) {
+                    this.triggerCooldown();
+                }
             }
 
             return null;
         } catch (error: any) {
             logger.error(`[TwelveData] Quote fetch failed for ${formattedSymbol}: ${error.message}`);
+            if (error.response?.status === 429) this.triggerCooldown();
             return null;
         }
     }
@@ -85,7 +99,6 @@ export class TwelveDataService {
      */
     async getEMA(symbol: string, period: number, interval: string = '1h'): Promise<number | null> {
         const formattedSymbol = this.formatSymbol(symbol);
-        // Twelve Data uses '1h' instead of Alpha Vantage's '60min'
         const tdInterval = interval === '60min' ? '1h' : interval;
         const cacheKey = `${formattedSymbol}_EMA_${period}_${tdInterval}`;
 
@@ -94,7 +107,7 @@ export class TwelveDataService {
             return cached.value;
         }
 
-        if (!config.market.twelveDataApiKey) return null;
+        if (!config.market.twelveDataApiKey || this.inCooldown()) return null;
 
         try {
             logger.info(`[TwelveData] Fetching EMA(${period}) for ${formattedSymbol}...`);
@@ -106,9 +119,17 @@ export class TwelveDataService {
                 this.indicatorCache.set(cacheKey, { value, timestamp: Date.now() });
                 return value;
             }
+
+            if (response.data && response.data.status === 'error') {
+                if (response.data.code === 429 || response.data.message.toLowerCase().includes('credits')) {
+                    this.triggerCooldown();
+                }
+            }
+
             return null;
         } catch (error: any) {
             logger.error(`[TwelveData] EMA fetch failed for ${formattedSymbol}: ${error.message}`);
+            if (error.response?.status === 429) this.triggerCooldown();
             return null;
         }
     }
@@ -126,7 +147,7 @@ export class TwelveDataService {
             return cached.value;
         }
 
-        if (!config.market.twelveDataApiKey) return null;
+        if (!config.market.twelveDataApiKey || this.inCooldown()) return null;
 
         try {
             logger.info(`[TwelveData] Fetching RSI(${period}) for ${formattedSymbol}...`);
@@ -138,9 +159,17 @@ export class TwelveDataService {
                 this.indicatorCache.set(cacheKey, { value, timestamp: Date.now() });
                 return value;
             }
+
+            if (response.data && response.data.status === 'error') {
+                if (response.data.code === 429 || response.data.message.toLowerCase().includes('credits')) {
+                    this.triggerCooldown();
+                }
+            }
+
             return null;
         } catch (error: any) {
             logger.error(`[TwelveData] RSI fetch failed for ${formattedSymbol}: ${error.message}`);
+            if (error.response?.status === 429) this.triggerCooldown();
             return null;
         }
     }
@@ -155,7 +184,7 @@ export class TwelveDataService {
             return cached.trend;
         }
 
-        if (!config.market.twelveDataApiKey) return 'Neutral';
+        if (!config.market.twelveDataApiKey || this.inCooldown()) return 'Neutral';
 
         try {
             logger.info(`[TwelveData] Fetching real Daily Trend for ${formattedSymbol}...`);
@@ -165,6 +194,11 @@ export class TwelveDataService {
             const data = response.data.values;
 
             if (!data || data.length === 0) {
+                if (response.data?.status === 'error') {
+                    if (response.data.code === 429 || response.data.message.toLowerCase().includes('credits')) {
+                        this.triggerCooldown();
+                    }
+                }
                 return 'Neutral';
             }
 
@@ -181,6 +215,7 @@ export class TwelveDataService {
             return trend;
         } catch (error: any) {
             logger.error(`[TwelveData] Trend fetch failed for ${formattedSymbol}: ${error.message}`);
+            if (error.response?.status === 429) this.triggerCooldown();
             return 'Neutral';
         }
     }

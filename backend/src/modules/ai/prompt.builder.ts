@@ -79,16 +79,23 @@ OUTPUT RULES:
 - If factors are mixed, clearly state the conflict.
 
 ---
-ANALYSIS DATA:
+Analysis Data:
 
 Symbol: ${symbol}
-Signal: ${signal}
+Signal: ${signal} (Timeframe: ${timeframe})
 
-Momentum: ${momentum}
-Volatility: ${volatility}
-Correlation with ${compareAsset}: ${correlationValue.toFixed(2)}
+Indicator Values:
+- Current Price: ${data.marketInfo.symbol === symbol ? 'Fetched' : 'Simulated'}
+- RSI(14): ${data.metadata.indicators?.rsi || 'N/A'}
+- EMA 21: ${data.metadata.indicators?.ema21 || 'N/A'}
+- EMA 200: ${data.metadata.indicators?.ema200 || 'N/A'}
+- EMA Extension: ${emaExtension?.toFixed(2)}%
 
-News Sentiment: ${newsSentiment} (${newsStrength})
+Market Context:
+- Momentum: ${momentum}
+- Volatility: ${volatility}
+- Correlation with ${compareAsset}: ${correlationValue.toFixed(2)}
+- News Sentiment: ${newsSentiment} (${newsStrength})
 
 Confidence Score: ${confidence}%
 Confidence Breakdown:

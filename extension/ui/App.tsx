@@ -44,8 +44,8 @@ export const App: React.FC = () => {
         // Initial scrape
         refreshAnalysis();
 
-        // Periodic scrape (every 2 seconds for high responsiveness)
-        const interval = setInterval(refreshAnalysis, 2000);
+        // Periodic scrape (every 10 seconds to respect API limits)
+        const interval = setInterval(refreshAnalysis, 10000);
 
         // Listen for messages from popup
         const handleMessage = (message: any) => {
@@ -101,6 +101,14 @@ export const App: React.FC = () => {
         uiStore.toggleExplanation();
     }, []);
 
+    const handleTabChange = useCallback((tab: 'Analysis' | 'Journal') => {
+        uiStore.setActiveTab(tab);
+    }, []);
+
+    const handleUpdateRisk = useCallback((settings: any) => {
+        uiStore.updateRiskSettings(settings);
+    }, []);
+
     const handlePositionChange = useCallback((top: number, left: number) => {
         uiStore.setPosition(top, left);
     }, []);
@@ -144,6 +152,8 @@ export const App: React.FC = () => {
                         onDragStart={handleDragStart}
                         onToggleSection={handleToggleSection}
                         onToggleExplanation={handleToggleExplanation}
+                        onTabChange={handleTabChange}
+                        onUpdateRisk={handleUpdateRisk}
                     />
                 ) : (
                     <div

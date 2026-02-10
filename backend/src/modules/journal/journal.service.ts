@@ -107,6 +107,32 @@ export class JournalService {
             this.writeLogs(logs);
         }
     }
+    /**
+     * Returns the full trade history
+     */
+    getHistory(limit: number = 50): SignalLog[] {
+        return this.readLogs().slice(-limit).reverse();
+    }
+
+    /**
+     * Get global statistics for all symbols
+     */
+    getAllStats(): { winRate: number; totalTrades: number; wins: number; losses: number } {
+        const logs = this.readLogs().filter(l => l.outcome !== 'PENDING');
+
+        if (logs.length === 0) return { winRate: 0, totalTrades: 0, wins: 0, losses: 0 };
+
+        const wins = logs.filter(l => l.outcome === 'WIN').length;
+        const losses = logs.filter(l => l.outcome === 'LOSS').length;
+        const winRate = (wins / logs.length) * 100;
+
+        return {
+            winRate: Math.round(winRate),
+            totalTrades: logs.length,
+            wins,
+            losses
+        };
+    }
 }
 
 export const journalService = new JournalService();

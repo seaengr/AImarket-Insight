@@ -5,7 +5,7 @@
 
 import { MOCK_DATA, DEFAULT_POSITION, API_URL } from '../../shared/constants';
 import { triggerSignalAlert } from '../../shared/alerts';
-import type { UIState, Subscriber, PanelVisibility, MarketAnalysis } from './types';
+import type { UIState, Subscriber, PanelVisibility, MarketAnalysis, RiskSettings } from './types';
 
 // Initial state
 const createInitialState = (): UIState => ({
@@ -14,6 +14,7 @@ const createInitialState = (): UIState => ({
         isMinimized: false,
         isSettingsOpen: false,
         isExplanationExpanded: false,
+        activeTab: 'Analysis',
         position: { ...DEFAULT_POSITION },
         visibility: {
             entryZone: true,
@@ -33,6 +34,14 @@ const createInitialState = (): UIState => ({
         },
         explanation: [...MOCK_DATA.explanation],
         timestamp: Date.now(),
+    },
+    journal: {
+        stats: null,
+        history: [],
+    },
+    risk: {
+        accountBalance: 1000,
+        riskPercent: 1,
     },
     isLoading: false,
     error: null,
@@ -133,6 +142,69 @@ class UIStore {
         }));
     }
 
+    setActiveTab(tab: 'Analysis' | 'Journal'): void {
+        this.setState((state) => ({
+            ...state,
+            panel: { ...state.panel, activeTab: tab },
+        }));
+
+        if (tab === 'Journal') {
+            this.fetchJournal();
+        }
+    }
+
+    updateRiskSettings(settings: Partial<RiskSettings>): void {
+        this.setState((state) => ({
+            ...state,
+            risk: { ...state.risk, ...settings }
+        }));
+    }
+
+    // Analysis updates (Integrated with Backend)
+    // ... (fetchAnalysis method remains the same)
+
+    async fetchJournal(): Promise<void> {
+        this.setLoading(true);
+        try {
+            const currentSymbol = this.state.analysis.marketInfo.symbol;
+
+            // 1. Fetch Stats
+            const statsResult: any = await this.proxyFetch(`${API_URL}/journal/stats?symbol=${currentSymbol}`);
+
+            // 2. Fetch History
+            const historyResult: any = await this.proxyFetch(`${API_URL}/journal/trades?limit=20`);
+
+            this.setState((state) => ({
+                ...state,
+                journal: {
+                    stats: statsResult,
+                    history: historyResult,
+                }
+            }));
+        } catch (error: any) {
+            console.error('[AI Market Insight] Failed to fetch journal:', error);
+        } finally {
+            this.setLoading(false);
+        }
+    }
+
+    private async proxyFetch(url: string, options: any = {}): Promise<any> {
+        return new Promise((resolve, reject) => {
+            chrome.runtime.sendMessage({
+                type: 'FETCH_ANALYSIS',
+                payload: { url, options }
+            }, (response) => {
+                if (chrome.runtime.lastError) {
+                    reject(new Error(chrome.runtime.lastError.message));
+                } else if (response && response.success) {
+                    resolve(response.data);
+                } else {
+                    reject(new Error(response?.error || 'Unknown background error'));
+                }
+            });
+        });
+    }
+
     // Analysis updates (Integrated with Backend)
     async fetchAnalysis(symbol: string, timeframe: string, price: number | null = null): Promise<void> {
         // Clear old analysis if symbol changed to prevent "phantom" signals
@@ -150,30 +222,11 @@ class UIStore {
         this.setError(null);
 
         try {
-            // Use background script to proxy the fetch (bypasses Mixed Content)
-            const result: any = await new Promise((resolve, reject) => {
-                chrome.runtime.sendMessage({
-                    type: 'FETCH_ANALYSIS',
-                    payload: {
-                        url: `${API_URL}/analyze`,
-                        options: {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ symbol, timeframe, price })
-                        }
-                    }
-                }, (response) => {
-                    if (chrome.runtime.lastError) {
-                        reject(new Error(chrome.runtime.lastError.message));
-                    } else if (response && response.success) {
-                        resolve(response.data);
-                    } else {
-                        reject(new Error(response?.error || 'Unknown background error'));
-                    }
-                });
+            const data = await this.proxyFetch(`${API_URL}/analyze`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ symbol, timeframe, price })
             });
-
-            const data = result;
 
             // Detect if signal changed and trigger alert
             const previousSignal = this.state.analysis.signal.type;

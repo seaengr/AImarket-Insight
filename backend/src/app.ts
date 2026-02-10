@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { analyzeController } from './api/analyze.controller';
+import { getJournalStats, getJournalTrades } from './api/journal.controller';
 import { config } from './shared/config';
 import { logger } from './shared/logger';
 
@@ -20,6 +21,8 @@ app.use((req, _res, next) => {
 
 // Routes
 app.post('/analyze', analyzeController);
+app.get('/journal/stats', getJournalStats);
+app.get('/journal/trades', getJournalTrades);
 
 app.get('/health', (_req, res) => {
     res.json({ status: 'UP', timestamp: new Date().toISOString() });

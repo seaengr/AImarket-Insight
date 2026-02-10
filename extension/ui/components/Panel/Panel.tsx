@@ -9,6 +9,8 @@ import { ConfidenceMeter } from '../Signal/ConfidenceMeter';
 import { EntryZone } from '../Levels/EntryZone';
 import { TakeProfit } from '../Levels/TakeProfit';
 import { StopLoss } from '../Levels/StopLoss';
+import { TradeJournal } from '../Journal/TradeJournal';
+import { RiskCalculator } from '../Risk/RiskCalculator';
 import styles from './Panel.module.css';
 
 interface PanelProps {
@@ -19,6 +21,8 @@ interface PanelProps {
     onDragStart: (e: React.MouseEvent) => void;
     onToggleSection: (section: 'entryZone' | 'takeProfit' | 'stopLoss') => void;
     onToggleExplanation: () => void;
+    onTabChange: (tab: 'Analysis' | 'Journal') => void;
+    onUpdateRisk: (settings: any) => void;
 }
 
 /**
@@ -34,8 +38,10 @@ export const Panel: React.FC<PanelProps> = ({
     onDragStart,
     onToggleSection,
     onToggleExplanation,
+    onTabChange,
+    onUpdateRisk,
 }) => {
-    const { panel, analysis } = state;
+    const { panel, analysis, journal, risk } = state;
 
     // Minimized state - show only icon
     if (panel.isMinimized) {
@@ -65,11 +71,27 @@ export const Panel: React.FC<PanelProps> = ({
                 onDragStart={onDragStart}
             />
 
+            {/* Tabs */}
+            <div className={styles.tabs}>
+                <button
+                    className={cn(styles.tab, panel.activeTab === 'Analysis' && styles.tabActive)}
+                    onClick={() => onTabChange('Analysis')}
+                >
+                    Analysis
+                </button>
+                <button
+                    className={cn(styles.tab, panel.activeTab === 'Journal' && styles.tabActive)}
+                    onClick={() => onTabChange('Journal')}
+                >
+                    Journal
+                </button>
+            </div>
+
             <div className={styles.panelContent}>
                 {state.isLoading && (
                     <div className={styles.loadingOverlay}>
                         <div className={styles.spinner} />
-                        <span className={styles.loadingText}>Analyzing {analysis.marketInfo.symbol}...</span>
+                        <span className={styles.loadingText}>Loading...</span>
                     </div>
                 )}
 
@@ -86,181 +108,149 @@ export const Panel: React.FC<PanelProps> = ({
                         </div>
                     </div>
                 )}
-                {/* Market Info Section */}
-                <div className={styles.section}>
-                    <div className={styles.marketInfoGrid}>
-                        <div className={styles.marketInfoItem}>
-                            <span className={styles.marketInfoLabel}>Symbol</span>
-                            <span className={styles.marketInfoValue}>{analysis.marketInfo.symbol}</span>
-                        </div>
-                        <div className={styles.marketInfoItem}>
-                            <span className={styles.marketInfoLabel}>Price</span>
-                            <span className={cn(
-                                styles.marketInfoValue,
-                                analysis.signal.type === 'BUY' && styles.bullishPrice,
-                                analysis.signal.type === 'SELL' && styles.bearishPrice
-                            )}>
-                                {analysis.levels.stopLoss > 0 ? analysis.levels.entryZone.low.toFixed(2) : (state.analysis.marketInfo.symbol.includes('BTC') ? '...' : analysis.levels.entryZone.low || 'Loading')}
-                            </span>
-                        </div>
-                        <div className={styles.marketInfoItem}>
-                            <span className={styles.marketInfoLabel}>Timeframe</span>
-                            <span className={styles.marketInfoValue}>{analysis.marketInfo.timeframe}</span>
-                        </div>
-                    </div>
 
-                    {/* Mean Reversion Gauge (Visualizing Overextension) */}
-                    {analysis.metadata?.emaExtension !== undefined && (
-                        <div className={styles.gaugeContainer}>
-                            <div className={styles.gaugeLabel}>
-                                <span>EMA 21 STRETCH</span>
-                                <span>{analysis.metadata.emaExtension.toFixed(2)}%</span>
+                {panel.activeTab === 'Analysis' ? (
+                    <div className={styles.tabContent}>
+                        {/* Market Info Section */}
+                        <div className={styles.section}>
+                            <div className={styles.marketInfoGrid}>
+                                <div className={styles.marketInfoItem}>
+                                    <span className={styles.marketInfoLabel}>Symbol</span>
+                                    <span className={styles.marketInfoValue}>{analysis.marketInfo.symbol}</span>
+                                </div>
+                                <div className={styles.marketInfoItem}>
+                                    <span className={styles.marketInfoLabel}>Price</span>
+                                    <span className={cn(
+                                        styles.marketInfoValue,
+                                        analysis.signal.type === 'BUY' && styles.bullishPrice,
+                                        analysis.signal.type === 'SELL' && styles.bearishPrice
+                                    )}>
+                                        {analysis.levels.stopLoss > 0 ? analysis.levels.entryZone.low.toFixed(2) : (state.analysis.marketInfo.symbol.includes('BTC') ? '...' : analysis.levels.entryZone.low || 'Loading')}
+                                    </span>
+                                </div>
+                                <div className={styles.marketInfoItem}>
+                                    <span className={styles.marketInfoLabel}>Timeframe</span>
+                                    <span className={styles.marketInfoValue}>{analysis.marketInfo.timeframe}</span>
+                                </div>
                             </div>
-                            <div className={styles.gaugeBar}>
-                                <div
-                                    className={cn(
-                                        styles.gaugeLevel,
-                                        Math.abs(analysis.metadata.emaExtension) > 3 ? styles.riskOff :
-                                            Math.abs(analysis.metadata.emaExtension) > 1.5 ? styles.neutral : styles.riskOn
-                                    )}
-                                    style={{ width: `${Math.min(Math.abs(analysis.metadata.emaExtension) * 20, 100)}%` }}
+
+                            {/* Mean Reversion Gauge */}
+                            {analysis.metadata?.emaExtension !== undefined && (
+                                <div className={styles.gaugeContainer}>
+                                    <div className={styles.gaugeLabel}>
+                                        <span>EMA 21 STRETCH</span>
+                                        <span>{analysis.metadata.emaExtension.toFixed(2)}%</span>
+                                    </div>
+                                    <div className={styles.gaugeBar}>
+                                        <div
+                                            className={cn(
+                                                styles.gaugeLevel,
+                                                Math.abs(analysis.metadata.emaExtension) > 3 ? styles.riskOff :
+                                                    Math.abs(analysis.metadata.emaExtension) > 1.5 ? styles.neutral : styles.riskOn
+                                            )}
+                                            style={{ width: `${Math.min(Math.abs(analysis.metadata.emaExtension) * 20, 100)}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Signal Section */}
+                        <div className={styles.section}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div>
+                                    <span className={styles.marketInfoLabel}>Bias</span>
+                                    <SignalBadge type={analysis.signal.type} />
+                                </div>
+                                <ConfidenceMeter value={analysis.signal.confidence} />
+                            </div>
+                        </div>
+
+                        {/* Position Sizer (Risk Calculator) */}
+                        {analysis.signal.type !== 'HOLD' && (
+                            <div className={styles.section}>
+                                <div className={styles.sectionHeader}>
+                                    <h3 className={styles.sectionTitle}>Position Sizer</h3>
+                                </div>
+                                <RiskCalculator
+                                    settings={risk}
+                                    analysis={analysis}
+                                    onUpdateSettings={onUpdateRisk}
                                 />
                             </div>
-                        </div>
-                    )}
-                </div>
+                        )}
 
-                {/* Mirror Asset Tracker (Divergence Context) */}
-                {analysis.metadata?.mirrorPrice !== undefined && analysis.metadata.correlationValue < 0 && (
-                    <div className={styles.mirrorRow}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <svg className={styles.mirrorIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        {/* Trade Levels Section */}
+                        {analysis.signal.type !== 'HOLD' && (
+                            <>
+                                <PanelSection
+                                    title="Entry Zone"
+                                    showToggle
+                                    isActive={panel.visibility.entryZone}
+                                    onToggle={() => onToggleSection('entryZone')}
+                                >
+                                    <EntryZone
+                                        low={analysis.levels.entryZone.low}
+                                        high={analysis.levels.entryZone.high}
+                                    />
+                                </PanelSection>
+
+                                <PanelSection
+                                    title="Take Profit"
+                                    showToggle
+                                    isActive={panel.visibility.takeProfit}
+                                    onToggle={() => onToggleSection('takeProfit')}
+                                >
+                                    <TakeProfit
+                                        tp1={analysis.levels.takeProfit.tp1}
+                                        tp2={analysis.levels.takeProfit.tp2}
+                                        tp3={analysis.levels.takeProfit.tp3}
+                                    />
+                                </PanelSection>
+
+                                <PanelSection
+                                    title="Stop Loss"
+                                    showToggle
+                                    isActive={panel.visibility.stopLoss}
+                                    onToggle={() => onToggleSection('stopLoss')}
+                                >
+                                    <StopLoss value={analysis.levels.stopLoss} />
+                                </PanelSection>
+                            </>
+                        )}
+
+                        {/* Explanation Section */}
+                        <button className={styles.expandButton} onClick={onToggleExplanation}>
+                            <span>Why this signal?</span>
+                            <svg
+                                className={cn(styles.expandIcon, panel.isExplanationExpanded && styles.expanded)}
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                            >
+                                <polyline points="6,9 12,15 18,9" />
                             </svg>
-                            <span className={styles.mirrorSymbol}>
-                                {analysis.marketInfo.symbol.includes('BTC') ? 'XAU' : 'BTC'} Mirror
-                            </span>
-                        </div>
-                        <span className={styles.mirrorValue}>
-                            {analysis.metadata.mirrorPrice > 0 ? `+${analysis.metadata.mirrorPrice.toFixed(2)}%` : `${analysis.metadata.mirrorPrice.toFixed(2)}%`}
-                        </span>
+                        </button>
+
+                        {panel.isExplanationExpanded && (
+                            <ul className={styles.explanationList}>
+                                {analysis.explanation.map((item, index) => (
+                                    <li key={index} className={styles.explanationItem}>
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
-                )}
-
-                {/* Signal Section */}
-                <div className={styles.section}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div>
-                            <span className={styles.marketInfoLabel}>Bias</span>
-                            <SignalBadge type={analysis.signal.type} />
-                        </div>
-                        <ConfidenceMeter value={analysis.signal.confidence} />
+                ) : (
+                    <div className={styles.tabContent}>
+                        <TradeJournal
+                            stats={journal.stats}
+                            history={journal.history}
+                            onRefresh={() => onTabChange('Journal')}
+                        />
                     </div>
-                </div>
-
-                {/* Strategic Alerts Section */}
-                {analysis.metadata && (
-                    <div className={styles.section}>
-                        <div className={styles.macroGrid}>
-                            <div className={styles.macroItem}>
-                                <span className={styles.marketInfoLabel}>Macro Regime</span>
-                                <div className={cn(
-                                    styles.macroBadge,
-                                    analysis.metadata.riskSentiment === 'Risk-On' && styles.riskOn,
-                                    analysis.metadata.riskSentiment === 'Risk-Off' && styles.riskOff
-                                )}>
-                                    {analysis.metadata.riskSentiment}
-                                </div>
-                            </div>
-                            <div className={styles.macroItem}>
-                                <span className={styles.marketInfoLabel}>Correlation</span>
-                                <span className={styles.macroValue}>
-                                    {(analysis.metadata.correlationValue * 100).toFixed(0)}%
-                                    <span className={styles.macroSubtext}> vs Benchmark</span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className={styles.strategicAlerts}>
-                            {analysis.metadata.emaExtension && Math.abs(analysis.metadata.emaExtension) > 3 && (
-                                <div className={cn(styles.alertBadge, styles.riskOff)}>
-                                    <span>⚠️ RETRACEMENT RISK: Overextended</span>
-                                </div>
-                            )}
-                            {analysis.metadata.mirrorPrice !== undefined && analysis.metadata.correlationValue < 0 && (
-                                <div className={cn(styles.alertBadge, styles.neutral)} style={{ backgroundColor: 'rgba(98, 0, 234, 0.15)', color: '#b388ff' }}>
-                                    <span>📡 DIVERGENCE: Mirror Mismatch</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Trade Levels Section (Only visible for BUY/SELL) */}
-                {analysis.signal.type !== 'HOLD' && (
-                    <>
-                        {/* Entry Zone Section */}
-                        <PanelSection
-                            title="Entry Zone"
-                            showToggle
-                            isActive={panel.visibility.entryZone}
-                            onToggle={() => onToggleSection('entryZone')}
-                        >
-                            <EntryZone
-                                low={analysis.levels.entryZone.low}
-                                high={analysis.levels.entryZone.high}
-                            />
-                        </PanelSection>
-
-                        {/* Take Profit Section */}
-                        <PanelSection
-                            title="Take Profit"
-                            showToggle
-                            isActive={panel.visibility.takeProfit}
-                            onToggle={() => onToggleSection('takeProfit')}
-                        >
-                            <TakeProfit
-                                tp1={analysis.levels.takeProfit.tp1}
-                                tp2={analysis.levels.takeProfit.tp2}
-                                tp3={analysis.levels.takeProfit.tp3}
-                            />
-                        </PanelSection>
-
-                        {/* Stop Loss Section */}
-                        <PanelSection
-                            title="Stop Loss"
-                            showToggle
-                            isActive={panel.visibility.stopLoss}
-                            onToggle={() => onToggleSection('stopLoss')}
-                        >
-                            <StopLoss value={analysis.levels.stopLoss} />
-                        </PanelSection>
-                    </>
-                )}
-
-                {/* Explanation Section */}
-                <button className={styles.expandButton} onClick={onToggleExplanation}>
-                    <span>Why this signal?</span>
-                    <svg
-                        className={cn(styles.expandIcon, panel.isExplanationExpanded && styles.expanded)}
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                    >
-                        <polyline points="6,9 12,15 18,9" />
-                    </svg>
-                </button>
-
-                {panel.isExplanationExpanded && (
-                    <ul className={styles.explanationList}>
-                        {analysis.explanation.map((item, index) => (
-                            <li key={index} className={styles.explanationItem}>
-                                {item}
-                            </li>
-                        ))}
-                    </ul>
                 )}
             </div>
         </div>
@@ -268,3 +258,4 @@ export const Panel: React.FC<PanelProps> = ({
 };
 
 export default Panel;
+

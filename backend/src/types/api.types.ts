@@ -76,6 +76,11 @@ export interface AnalysisResponse {
     metadata: {
         momentum: string;
         volatility: string;
+        indicators?: {
+            rsi: number;
+            ema21: number;
+            ema200: number;
+        };
         correlationValue: number;
         riskSentiment: string;
         newsSentiment: string;
@@ -84,5 +89,6 @@ export interface AnalysisResponse {
         mirrorPrice?: number;
         atrValue?: number;
         sltpReasoning?: string;
+        strategyMode?: 'Sniper' | 'Scalper';
     };
 }

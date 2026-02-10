@@ -8,14 +8,20 @@ export interface SignalResult {
     confidence: number;
     breakdown: ConfidenceBreakdown;
     reasons: string[];
+    strategyMode: 'Sniper' | 'Scalper';
 }
 
 export class SignalService {
     /**
      * Deterministic rules engine with detailed confidence breakdown.
+     * @param timeframe - Used to determine Scalper (5m/15m) vs Sniper (1H/4H/1D) mode
      */
-    generateSignal(data: MarketData, correlation: number): SignalResult {
-        logger.info(`Generating signal for ${data.symbol}`);
+    generateSignal(data: MarketData, correlation: number, timeframe: string = '1H'): SignalResult {
+        // Determine Strategy Mode based on Timeframe
+        const isScalpingTimeframe = ['5m', '15m', '5M', '15M', '1m', '1M', '3m', '3M'].includes(timeframe);
+        const strategyMode = isScalpingTimeframe ? 'Scalper' : 'Sniper';
+
+        logger.info(`Generating ${strategyMode} signal for ${data.symbol} on ${timeframe}`);
 
         // 0. Get Historical Learning Stats (Reinforcement Learning)
         const stats = journalService.getStats(data.symbol);
@@ -257,9 +263,9 @@ export class SignalService {
 
         let type: SignalType = 'HOLD';
 
-        // --- STRICT TREND FILTER & REVERSAL EXCEPTIONS ---
-        // Trend Rule: BUY only if EMA 21 > EMA 200, SELL only if EMA 21 < EMA 200.
-        // Exception: Major Price Movement (RSI Extreme or Overextension)
+        // --- DUAL-MODE STRATEGY LOGIC ---
+        // SNIPER MODE (1H, 4H, 1D): Strict trend filter for swing trades
+        // SCALPER MODE (5m, 15m): Relaxed filter for quick profits
 
         const isOversoldReversal = rsi < 25;     // Extreme Oversold
         const isOverboughtReversal = rsi > 75;   // Extreme Overbought
@@ -269,24 +275,63 @@ export class SignalService {
         const isReversalBuy = isOversoldReversal || isOverextendedBuy;
         const isReversalSell = isOverboughtReversal || isOverextendedSell;
 
-        if (totalScore >= 50) {
-            if (isGoldenCross || isReversalBuy) {
-                type = 'BUY';
-                if (!isGoldenCross) {
-                    reasons.push("⚠️ Counter-Trend Reversal Trade: Reversal conditions met (RSI < 25 or Extension < -3%)");
+        if (strategyMode === 'Scalper') {
+            // ⚡ SCALPER MODE: Relaxed filter for quick trades
+            // Allow SELL even in uptrend if price drops below EMA 21
+            reasons.push(`⚡ Scalper Mode Active (${timeframe})`);
+
+            // Lower threshold for signals (30 instead of 50)
+            if (totalScore >= 30) {
+                // BUY: Price above EMA 21 + momentum
+                if (data.price > ema21 && isGreenCandle) {
+                    type = 'BUY';
+                    reasons.push('Scalper BUY: Price above EMA 21 with bullish momentum');
+                } else if (isReversalBuy) {
+                    type = 'BUY';
+                    reasons.push('Scalper BUY: Oversold bounce detected');
                 }
-            } else {
-                reasons.push("⛔ BUY Filtered: Price is in Downtrend (EMA 21 < 200) and no Reversal setup found.");
+            } else if (totalScore <= -30) {
+                // SELL: Price below EMA 21 (NO Death Cross required!)
+                if (data.price < ema21 && isRedCandle) {
+                    type = 'SELL';
+                    reasons.push('Scalper SELL: Price below EMA 21 with bearish momentum');
+                } else if (isReversalSell) {
+                    type = 'SELL';
+                    reasons.push('Scalper SELL: Overbought rejection detected');
+                }
             }
-        }
-        else if (totalScore <= -50) {
-            if (isDeathCross || isReversalSell) {
+
+            // Extra: Allow quick reversal trades
+            if (type === 'HOLD' && rsi < 35 && isGreenCandle) {
+                type = 'BUY';
+                reasons.push('Scalper BUY: RSI bounce opportunity');
+            } else if (type === 'HOLD' && rsi > 65 && isRedCandle) {
                 type = 'SELL';
-                if (!isDeathCross) {
-                    reasons.push("⚠️ Counter-Trend Reversal Trade: Reversal conditions met (RSI > 75 or Extension > 3%)");
+                reasons.push('Scalper SELL: RSI rejection opportunity');
+            }
+        } else {
+            // 🎯 SNIPER MODE: Strict trend filter for swing trades
+            reasons.push(`🎯 Sniper Mode Active (${timeframe})`);
+
+            if (totalScore >= 50) {
+                if (isGoldenCross || isReversalBuy) {
+                    type = 'BUY';
+                    if (!isGoldenCross) {
+                        reasons.push("⚠️ Counter-Trend Reversal Trade: Reversal conditions met (RSI < 25 or Extension < -3%)");
+                    }
+                } else {
+                    reasons.push("⛔ BUY Filtered: Price is in Downtrend (EMA 21 < 200) and no Reversal setup found.");
                 }
-            } else {
-                reasons.push("⛔ SELL Filtered: Price is in Uptrend (EMA 21 > 200) and no Reversal setup found.");
+            }
+            else if (totalScore <= -50) {
+                if (isDeathCross || isReversalSell) {
+                    type = 'SELL';
+                    if (!isDeathCross) {
+                        reasons.push("⚠️ Counter-Trend Reversal Trade: Reversal conditions met (RSI > 75 or Extension > 3%)");
+                    }
+                } else {
+                    reasons.push("⛔ SELL Filtered: Price is in Uptrend (EMA 21 > 200) and no Reversal setup found.");
+                }
             }
         }
 
@@ -301,7 +346,8 @@ export class SignalService {
                 volatility: Math.abs(volatility),
                 news: Math.abs(news)
             },
-            reasons
+            reasons,
+            strategyMode
         };
     }
 
